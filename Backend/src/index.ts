@@ -12,7 +12,8 @@ require("dotenv").config();
 const app = express();
 const port = 5000;
 connectDB()
-// Middleware
+
+// Middlewares
 app.use(session({
   secret: uuid,
   resave: false,
