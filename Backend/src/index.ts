@@ -2,6 +2,8 @@ import express from 'express';
 import http from "http";
 import {connectDB} from "../config/mongoConfig"
 import authRoute from "./routes/authRoutes"
+import mechanicRoute from "./routes/mechanicRoute"
+
 import cors from "cors"
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,6 +33,7 @@ credentials:true
 
 // Routes
 app.use("/api/auth",authRoute)
+app.use("/api/mechanic/",mechanicRoute)
 
 
 const server = http.createServer(app)

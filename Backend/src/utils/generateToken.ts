@@ -1,9 +1,18 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { UserDoc } from '../interfaces/IUser';
+import { JwtPayload, Secret } from "jsonwebtoken";
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
+dotenv.config();
 
-export const generateToken = (data: UserDoc ): string => {
-    if (!process.env.JWT_SECRET) throw new Error('JWT secret is not defined');
-    const plainObject = data.toObject();
-    return jwt.sign(plainObject, process.env.JWT_SECRET, { expiresIn: process.env.JWT_DURATION });
+export class CreateJWT {
+    generateToken(payload: string | undefined): string | undefined {
+        if (payload) {
+            const token = jwt.sign({ data: payload }, process.env.JWT_SECRET as Secret, { expiresIn: '5m' });
+            return token;
+        }
+    }
+    generateRefreshToken(payload: string | undefined): string | undefined {
+        return jwt.sign({ data: payload }, process.env.JWT_REFRESH_SECRET as Secret, { expiresIn: '48h' });
+    }
 }
+

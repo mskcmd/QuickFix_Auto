@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import { SignupValidation } from "../../Components/Common/Validations";
 import { signup } from "../../Api/user";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export interface FromData {
   name: string;
@@ -17,6 +17,7 @@ interface initelVal {
   phone: string;
   password: string;
   cpassword: string;
+
 }
 
 const initialValues: initelVal = {
@@ -25,6 +26,7 @@ const initialValues: initelVal = {
   phone: "",
   password: "",
   cpassword: "",
+
 };
 
 const SignupPage: React.FC = () => {
@@ -41,10 +43,14 @@ const SignupPage: React.FC = () => {
         confirmPassword: values.cpassword,
       };
       try {
+        console.log(formdata);
+        
         const result = await signup(formdata);
+        console.log("vv",result);
+
         if (result) {
           console.log(result);
-          navigate('/user/otp-page');
+          navigate('/otp-page');
         } else {
           console.log("not_found");
         }
@@ -119,16 +125,7 @@ const SignupPage: React.FC = () => {
               className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.cpassword && <div className="text-red-600">{errors.cpassword}</div>}
-            <div className="flex items-center mb-2">
-              <input
-                id="mechanic"
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-indigo-600"
-              />
-              <label htmlFor="mechanic" className="ml-2 text-gray-700">
-                Are you a mechanic?
-              </label>
-            </div>
+            
             <button
               type="submit"
               className="w-full py-2 px-4 bg-black text-white font-semibold rounded-md hover:bg-blue-950 transition duration-300"
@@ -139,9 +136,9 @@ const SignupPage: React.FC = () => {
           <div className="mt-6">
             <p className="text-center mt-4 text-gray-600">
               You have an account?{" "}
-              <a href="#" className="text-indigo-600 hover:text-indigo-800">
+              <Link  to='/login'><a href="#" className="text-indigo-600 hover:text-indigo-800">
                 Login
-              </a>
+              </a></Link>
             </p>
           </div>
         </div>

@@ -23,6 +23,10 @@ const userSchema = new Schema<UserDoc>({
   isVerified: {
     type: Boolean,
     default: false 
+  },
+  isUser: {
+    type: Boolean,
+    default: true
   }
 });
 
