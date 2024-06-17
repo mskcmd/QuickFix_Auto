@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { resendOtp, verifyOtp } from "../../Api/user";
-import { useLocation, useNavigate } from "react-router-dom";
+import { resendOtp, verifyOtpReset } from "../../Api/user";
+import {  useNavigate, useParams } from "react-router-dom";
 import { UserData } from "../../app/slice/AuthSlice";
 import { useAppSelector } from "../../app/store";
-import { toast } from 'react-toastify';
 
 interface OTPComponentProps {}
 
@@ -14,10 +13,9 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
   const [seconds, setSeconds] = useState<number>(30);
   const [isOtpExpired, setIsOtpExpired] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false); // New state variable
-  const location = useLocation()
-    const path = location.pathname.split('/')
-    console.log("hjh",path.includes("forget"));
-
+  const params = useParams<{ userId: string }>(); // Updated type for params
+  const userId = params.userId || ''; // Ensure userId is not undefined
+  
   const userData: UserData | null = useAppSelector(
     (state) => state.auth.userData
   );
@@ -55,13 +53,14 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
     setIsLoading(true); 
 
     try {
-      console.log(otp);
-      const result = await verifyOtp(otp);
+      console.log("otpuserid",otp,userId);
+      const result = await verifyOtpReset(otp,userId);
       console.log("Resultq:", result);
-    
-      if (result?.data.isUser === true) {
-        navigate("/login");
-        toast.success("Registration Successful");
+      console.log("ID:", result?.data.result._id);
+       const userid =  result?.data.result._id
+
+      if(result?.status){ 
+        return navigate(`/reset/${userid}`); 
       } else {
         console.log("error");
       }

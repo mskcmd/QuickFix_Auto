@@ -31,6 +31,7 @@ methods: ["GET,PUT,PATCH,POST,DELETE"],
 credentials:true
 }))
 
+
 // Routes
 app.use("/api/auth",authRoute)
 app.use("/api/mechanic/",mechanicRoute)

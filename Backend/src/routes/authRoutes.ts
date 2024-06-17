@@ -31,10 +31,18 @@ authRoute.post("/signup",userController.signup.bind(userController))
 authRoute.post("/veryfy-otp",userController.veryfyOtp.bind(userController))
 authRoute.post("/login",userController.Login.bind(userController))
 authRoute.get("/resendotp",userController.resendOtp.bind(userController))
+authRoute.get("/forgetPassword",userController.forgetPassword.bind(userController))
+authRoute.get("/veryfyotpreset",userController.veryfyOtpreset.bind(userController))
+authRoute.post("/resetPassword",userController.resetPassword.bind(userController))
+
 
 authRoute.post("/mechanic/signup",mechanicController.MechanicSignup.bind(mechanicController))
 authRoute.post("/mechanic/veryfy-otp",mechanicController.veryfyOtp.bind(mechanicController))
 authRoute.post("/mechanic/login",mechanicController.Login.bind(mechanicController))
+authRoute.post("/mechanic/resendotp",mechanicController.resendOtp.bind(mechanicController))
+authRoute.get("/mechanic/forgetPassword",mechanicController.forgetPassword.bind(mechanicController))
+authRoute.get("/mechanic/veryfyotpreset",mechanicController.veryfyOtpreset.bind(mechanicController))
+authRoute.post("/mechanic/resetPassword",mechanicController.resetPassword.bind(mechanicController))
 
 
 

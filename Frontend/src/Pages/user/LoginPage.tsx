@@ -5,6 +5,8 @@ import { Login } from "../../Api/user";
 import { useDispatch } from "react-redux";
 import { setUserCredential } from "../../app/slice/AuthSlice";
 import { Link, useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+
 
 interface IinitialValues {
   email: string;
@@ -27,9 +29,13 @@ const LoginPage: React.FC = () => {
           const data = await Login(values.email, values.password);
           console.log("cccc",data?.data.data);
           dispatch(setUserCredential(data?.data.data));
+          
           navigate("/home");
+
         } catch (error) {
           console.log(error);
+          toast.error('somthing went wrong while login');
+
         }
       };
       handleSubmit();
@@ -83,9 +89,11 @@ const LoginPage: React.FC = () => {
             </button>
             <div className="flex justify-between mt-4">
               <p className="text-sm text-gray-600">
+              <Link to="/forgetPassword">
                 <a href="#" className="text-indigo-600 hover:text-indigo-800">
                   Forgot Password?
                 </a>
+                </Link>
               </p>
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}

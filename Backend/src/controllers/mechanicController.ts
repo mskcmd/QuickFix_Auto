@@ -2,6 +2,7 @@ import { log } from "util";
 import { MechnicDoc } from "../interfaces/IMechanic";
 import MechanicServices from "../services/mechanicServices";
 import { Request, Response } from "express"
+import { sendVerifyMail } from "../utils/otpVerification";
 
 class mechanicController {
     private mechanicServices: MechanicServices;
@@ -17,7 +18,13 @@ class mechanicController {
             const result = await this.mechanicServices.createMechanic(name, email, phone, password);
             req.session.mechotp = result?.otp
             req.session.mechanicId = result?.newMechanic?._id as string;
-            console.log("ss", req.session.mechotp, req.session.mechanicId);
+            req.session.mechanicemail = result?.newMechanic?.email as string;
+            req.session.mechanicname = result?.newMechanic?.name as string;
+
+            const currentTime = Date.now();
+            const otpExpirationTime = currentTime + 30 * 1000; // 1 minute in milliseconds
+            req.session.mechanicotpTime = otpExpirationTime;
+
             if (result && result.status) res.json({ succuss: true, result, message: result.message })
             else res.json({ notsuccuss: false, message: result?.message });
         } catch (error) {
@@ -43,6 +50,25 @@ class mechanicController {
             res.json({ message: "otp is rong" })
         }
     }
+    async resendOtp(req: Request, res: Response): Promise<void> {
+        try {
+          const email = req.session.mechanicemail;
+          const name = req.session.mechanicname;
+          if (!email || !name) {
+            res.status(400).json({ error: 'Email or name is missing' });
+            return;
+          }
+          const otp: string = await sendVerifyMail(name, email);
+          const currentTime = Date.now();
+          const otpExpirationTime = currentTime + 30 * 1000; 
+          req.session.mechanicotpTime = otpExpirationTime;
+          req.session.mechotp = otp;
+          res.status(200).json({ message: 'OTP sent successfully' });
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ error: 'Failed to send OTP' });
+        }
+      }
     async Login(req: Request, res: Response): Promise<void> {
         try {
             const { email, password } = req.body
@@ -75,7 +101,86 @@ class mechanicController {
 
     }
   
+    async forgetPassword(req: Request, res: Response): Promise<void> {
+        try {
+          const email = req.query.email as string;
+          console.log(email);
+          
+          if (!email) {
+            res.status(400).json({ error: 'Email is required' });
+            return;
+          }
+          const result = await this.mechanicServices.forgetService(email);
+          console.log(result);
+    
+          console.log("email check", result.result?.name);
+          const name = result.result?.name;
+          if (result.success && name) {
+            const otp: string = await sendVerifyMail(name, email);
+            const currentTime = Date.now();
+            const otpExpirationTime = currentTime + 30 * 1000;
+            req.session.otpTime = otpExpirationTime;
+            req.session.otp = otp;
+            res.json({ success: true, result });
+          } else if (!name) {
+            res.status(400).json({ error: 'User name is missing' });
+          } else {
+            res.status(500).json({ error: 'Failed to forget password' });
+          }
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      }
 
+      async veryfyOtpreset(req: Request, res: Response): Promise<void> {
+        try {
+    
+          const { otp, userId } = req.query;
+          console.log("gf",req.query);
+    
+          if (typeof otp !== 'string' || typeof userId !== 'string') {
+            res.status(400).json({ error: 'Invalid request parameters' });
+            return;
+          }
+    
+          const otpString = String(otp);
+          const currentTime = Date.now();
+          const otpExpirationTime = req.session.otpTime;
+    
+          // Check if OTP is expired
+          if (!otpExpirationTime || currentTime > otpExpirationTime) {
+            res.json({ message: "OTP has expired" });
+            return;
+          }
+    
+          if (otpString === req.session.otp) {
+            console.log("good");
+            const result = await this.mechanicServices.checkExistingUser(userId);
+            res.json({ success: true, result })
+          } else {
+            res.json({ message: "OTP is wrong" });
+          }
+        } catch (error) {
+          console.error("Error in UserController.verifyOtp:", error);
+          res.status(500).json({ error: "Internal server error" });
+        }
+      }
+      async resetPassword(req: Request, res: Response): Promise<void> {
+        try {
+          const newPassword = req.body.password;
+          const userId = req.body.userId;
+    
+          console.log('Received newPassword:', newPassword);
+          console.log('Received userId:', userId);
+    
+          const result = await this.mechanicServices.resetPassword(newPassword, userId)
+          res.json({result})
+        } catch (error) {
+          console.error('Error resetting password:', error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      }
 
 }
 

@@ -6,6 +6,9 @@ import MOtppage from "../Pages/mechanic/Otppage.tsx";
 import MechanicLoggedin from "../Components/Mechanic/MechanicCommen/MechanicLoggedin.tsx";
 import RegisterOne from "../Components/Mechanic/MechanicCommen/RegisterOne.tsx";
 import MechanicHome from "../Pages/mechanic/MechanicHome.tsx";
+import ForgotPassword from "../Pages/mechanic/ForgotPassword.tsx";
+import OTPComponent1 from "../Pages/mechanic/OtpPassReset.tsx";
+import RestOtp from "../Pages/mechanic/RestOtp.tsx";
 
 function mechanicRoutes() {
   return (
@@ -15,6 +18,10 @@ function mechanicRoutes() {
       <Route path="login" element={<LoginPage />} />
       <Route path="otp-page" element={<MOtppage />} />
       <Route path="signup" element={<SignupPage />} />
+      <Route path="forgetPassword" element={< ForgotPassword/>}/>
+      <Route path="forget/otp-page/:userId" element={<OTPComponent1 />} />
+      <Route path="reset/:userid" element={<RestOtp/>}/>
+
     </Route>
 
     <Route element={<MechanicLoggedin />}>

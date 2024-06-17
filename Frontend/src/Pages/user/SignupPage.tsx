@@ -2,7 +2,8 @@ import { useFormik } from "formik";
 import { SignupValidation } from "../../Components/Common/Validations";
 import { signup } from "../../Api/user";
 import { Link, useNavigate } from "react-router-dom";
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export interface FromData {
   name: string;
   email: string;
@@ -44,12 +45,14 @@ const SignupPage: React.FC = () => {
       };
       try {
         console.log(formdata);
-        
         const result = await signup(formdata);
-        console.log("vv",result);
+        console.log("vv",result?.data.message);
+        if(result?.data.notSuccess===false){
+          toast.error("Email already exists");
+        }
 
-        if (result) {
-          console.log(result);
+        if (result?.data.success===true) {
+          console.log("ss",result.data.success);
           navigate('/otp-page');
         } else {
           console.log("not_found");

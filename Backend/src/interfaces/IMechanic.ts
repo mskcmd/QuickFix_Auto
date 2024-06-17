@@ -16,6 +16,8 @@ declare module 'express-session' {
   interface SessionData {
     mechotp: string;
     mechanicId: string;
-    // Add any other properties you need to store in the session
+    mechanicname:string;
+    mechanicemail:string;
+    mechanicotpTime:number;
   }
 }

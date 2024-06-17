@@ -2,6 +2,9 @@ import { useFormik } from "formik";
 import { SignupValidation } from "../../Components/Common/Validations";
 import { mechanicSingup } from "../../Api/mechanic";
 import { Link,useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export interface FromData {
   name: string;
@@ -45,8 +48,13 @@ const SignupPage: React.FC = () => {
       };
       try {
       const mechData = await mechanicSingup(formdata);
-      console.log(mechData);
-      if (mechData) {
+      console.log(mechData?.data.notsuccuss);
+      if(mechData?.data.notsuccuss===false){
+        toast.error("Email already exists");
+      }
+     console.log("cc",mechData?.data.succuss);
+
+      if (mechData?.data.succuss===true) {
         console.log(mechData);
         navigate('/mechanic/otp-page');
       } else {

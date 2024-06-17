@@ -19,6 +19,8 @@ class adminRepositories {
           console.error(error);
         }
       }
+
+      
 }
 
 export default adminRepositories

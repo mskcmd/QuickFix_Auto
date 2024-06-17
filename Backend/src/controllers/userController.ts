@@ -3,6 +3,7 @@ import UserServices from "../services/userServices";
 import { UserDoc } from "../interfaces/IUser"
 import { Cookie } from "express-session";
 import { sendVerifyMail } from "../utils/otpVerification";
+import { log } from "console";
 class UserController {
   private userService: UserServices;
 
@@ -26,7 +27,6 @@ class UserController {
       const otpExpirationTime = currentTime + 30 * 1000; // 1 minute in milliseconds
       req.session.otpTime = otpExpirationTime;
 
-      console.log("ss", req.session.otp, req.session.userId, req.session.otpTime);
       if (result && result.status) {
         res.json({ isUser: true, success: true, result, message: result.message });
       } else {
@@ -54,7 +54,7 @@ class UserController {
       const userId: any = req.session.userId;
       if (otpString === req.session.otp) {
         const result = await this.userService.veryfyOtp(userId);
-        console.log("userdata",result);
+        console.log("userdata", result);
         if (result && result.status) {
           res.json({ isUser: true, success: true, result, message: result.message });
         } else {
@@ -104,30 +104,104 @@ class UserController {
     try {
       const email = req.session.email;
       const name = req.session.name;
-      console.log(email, name
-);
-
       if (!email || !name) {
         res.status(400).json({ error: 'Email or name is missing' });
         return;
       }
-      console.log(email);
       const otp: string = await sendVerifyMail(name, email);
-      console.log("resendOtp",otp);
       const currentTime = Date.now();
-      const otpExpirationTime = currentTime + 30 * 1000; 
-      console.log("old time",req.session.otpTime);
+      const otpExpirationTime = currentTime + 30 * 1000;
       req.session.otpTime = otpExpirationTime;
-      console.log("new time",req.session.otpTime);
-      console.log("oldotp",req.session.otp);
       req.session.otp = otp;
-      console.log("newotp",req.session.otp);
       res.status(200).json({ message: 'OTP sent successfully' });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Failed to send OTP' });
     }
   }
+
+  async forgetPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const email = req.query.email as string;
+      console.log(email);
+      
+      if (!email) {
+        res.status(400).json({ error: 'Email is required' });
+        return;
+      }
+      const result = await this.userService.forgetService(email);
+      console.log(result);
+
+      console.log("email check", result.result?.name);
+      const name = result.result?.name;
+      if (result.success && name) {
+        const otp: string = await sendVerifyMail(name, email);
+        const currentTime = Date.now();
+        const otpExpirationTime = currentTime + 30 * 1000;
+        req.session.otpTime = otpExpirationTime;
+        req.session.otp = otp;
+        res.json({ success: true, result });
+      } else if (!name) {
+        res.status(400).json({ error: 'User name is missing' });
+      } else {
+        res.status(500).json({ error: 'Failed to forget password' });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const newPassword = req.body.password;
+      const userId = req.body.userId;
+
+      console.log('Received newPassword:', newPassword);
+      console.log('Received userId:', userId);
+
+      const result = await this.userService.resetPassword(newPassword, userId)
+      res.json({result})
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async veryfyOtpreset(req: Request, res: Response): Promise<void> {
+    try {
+
+      const { otp, userId } = req.query;
+      console.log("gf",req.query);
+
+      if (typeof otp !== 'string' || typeof userId !== 'string') {
+        res.status(400).json({ error: 'Invalid request parameters' });
+        return;
+      }
+
+      const otpString = String(otp);
+      const currentTime = Date.now();
+      const otpExpirationTime = req.session.otpTime;
+
+      // Check if OTP is expired
+      if (!otpExpirationTime || currentTime > otpExpirationTime) {
+        res.json({ message: "OTP has expired" });
+        return;
+      }
+
+      if (otpString === req.session.otp) {
+        console.log("good");
+        const result = await this.userService.checkExistingUser(userId);
+        res.json({ success: true, result })
+      } else {
+        res.json({ message: "OTP is wrong" });
+      }
+    } catch (error) {
+      console.error("Error in UserController.verifyOtp:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+
 }
 
 export default UserController

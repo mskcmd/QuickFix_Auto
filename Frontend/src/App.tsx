@@ -15,10 +15,12 @@ import UserRoutes from "./Routes/userRoutes";
 import UserLoggedOut from "./Components/User/UserCommen/UserLoggedOut";
 import LandingPage from "./Pages/user/LandingPage";
 // import AdminDashboard from "./Pages/admin/AdminDashboard";
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
     <>
+          <ToastContainer />
       <BrowserRouter>
         <Routes>
           <Route element={<UserLoggedOut />}>

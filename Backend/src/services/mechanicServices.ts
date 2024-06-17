@@ -92,8 +92,58 @@ class mechanicServices {
         }
     }
 
+    async forgetService(email: string) {
+        try {
+            console.log("sds", email);
 
+            const result = await this.mechanicRepo.findUserByEmail(email);
+            console.log(result);
+
+            if (!result) {
+                return { success: false, message: 'User not found' };
+            }
+            if (!result.isVerified) {
+                return { success: false, message: 'User is not verified' };
+            }
+            return { success: true, result };
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error forgetting password');
+        }
+    }
+    async checkExistingUser(userId: string) {
+        try {
+            const userData: MechnicDoc | null = await this.mechanicRepo.findUserById(userId);
+
+            if (!userData) {
+                throw new Error("User not found");
+            }
+            return userData;
+        } catch (error) {
+            console.error("Error in checkExistingEmail:", error);
+            throw new Error("Failed to check existing email. Please try again later.");
+        }
+    }
+    async resetPassword(userId: string, password: string) {
+        try {
+            if (!userId || !password) {
+                throw new Error('User ID and password are required');
+            }
+
+            const hashpass: string = await bcrypt.hash(password, 10);
+            const result = await this.mechanicRepo.resetPassword(hashpass, password);
+
+            if (!result) {
+                throw new Error('Failed to reset password');
+            }
+            return { succuss: true, result }
+        } catch (error) {
+            console.error('Error in UserService.resetPassword:', error);
+            throw error;
+        }
+    }
 
 }
+
 
 export default mechanicServices;

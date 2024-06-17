@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { resendOtp, verifyOtp } from "../../Api/user";
-import { useLocation, useNavigate } from "react-router-dom";
+import { resendOtp } from "../../Api/user";
+import {  useNavigate, useParams } from "react-router-dom";
 import { UserData } from "../../app/slice/AuthSlice";
 import { useAppSelector } from "../../app/store";
-import { toast } from 'react-toastify';
+import { verifyOtpReset } from "../../Api/mechanic";
 
 interface OTPComponentProps {}
 
-const OTPComponent: React.FC<OTPComponentProps> = () => {
+const OTPComponent1: React.FC<OTPComponentProps> = () => {
   const navigate = useNavigate();
 
   const [otp, setOTP] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(30);
   const [isOtpExpired, setIsOtpExpired] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false); // New state variable
-  const location = useLocation()
-    const path = location.pathname.split('/')
-    console.log("hjh",path.includes("forget"));
-
-  const userData: UserData | null = useAppSelector(
-    (state) => state.auth.userData
+  const params = useParams<{ userId: string }>(); // Updated type for params
+  const userId = params.userId || ''; // Ensure userId is not undefined
+  
+  const mechanicData: UserData | null = useAppSelector(
+    (state) => state.auth.mechanicData
   );
 
   useEffect(() => {
-    if (userData) navigate("/home");
-  }, [navigate, userData]);
+    if (mechanicData) navigate("/mechanic/home");
+  }, [navigate, mechanicData]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -55,13 +54,14 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
     setIsLoading(true); 
 
     try {
-      console.log(otp);
-      const result = await verifyOtp(otp);
+      console.log("otpuserid",otp,userId);
+      const result = await verifyOtpReset(otp,userId);
       console.log("Resultq:", result);
-    
-      if (result?.data.isUser === true) {
-        navigate("/login");
-        toast.success("Registration Successful");
+      console.log("ID:", result?.data.result._id);
+       const userid =  result?.data.result._id
+
+      if(result?.status){ 
+        return navigate(`/mechanic/reset/${userid}`); 
       } else {
         console.log("error");
       }
@@ -95,7 +95,7 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
           Enter OTP
         </h1>
         <p className="text-gray-600 text-center mb-4">
-          Code sent to your Email
+          Code sent to your Emailc mech gg
         </p>
         <div className="flex justify-center my-4">
           <input
@@ -146,4 +146,4 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
   );
 };
 
-export default OTPComponent;
+export default OTPComponent1;
