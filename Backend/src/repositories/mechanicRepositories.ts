@@ -28,21 +28,37 @@ class mechanicRepositories {
         }
     }
 
+   
+
     async login(email: string, password: string) {
         try {
-            const mechanic = await Mechanic.findOne({ email });
-            if (!mechanic) {
-                return { status: false, message: "User not found." };
-            }
-            const isPasswordValid = await bcrypt.compare(password, mechanic.password);
-            if (!isPasswordValid) {
-                return { status: false, message: "Invalid password." };
-            }
-            return { status: true, mechanic };
+          const mechanic = await Mechanic.findOne({ email }).select('-password');
+          console.log("user", mechanic);
+      
+          if (!mechanic) {
+            return { status: false, message: "mechanic not found." };
+          }
+          if (!mechanic.isVerified) {
+            return { isVerified: false, message: "mechanic not verified." };
+          }
+      
+          const mechanicWithPassword = await Mechanic.findOne({ email }).select('+password');
+          if (!mechanicWithPassword) {
+            return { status: false, message: "mechanic not found for password validation." };
+          }
+      
+          const isPasswordValid = await bcrypt.compare(password, mechanicWithPassword.password);
+          if (!isPasswordValid) {
+            return { status: false, message: "Invalid password." };
+          }
+      
+          return { status: true, mechanic };
         } catch (error) {
-            console.error(error);
+          console.error(error);
+          return { status: false, message: "An error occurred during login." };
         }
-    }
+      }
+      
     async findUserById(userId: string): Promise<MechnicDoc | null> {
         try {
             const userData: MechnicDoc | null = await Mechanic.findOne({ _id: userId }).exec();

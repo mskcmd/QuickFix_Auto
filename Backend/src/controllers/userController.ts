@@ -47,7 +47,7 @@ class UserController {
 
       // Check if OTP is expired
       if (!otpExpirationTime || currentTime > otpExpirationTime) {
-        res.json({ message: "OTP has expired" });
+        res.json({ message: "OTP has expired" ,Isexpired:true});
         return
       }
 
@@ -69,41 +69,56 @@ class UserController {
     }
   }
 
-  async Login(req: Request, res: Response): Promise<void> {
+
+  async login(req: Request, res: Response): Promise<void> {
     try {
-      const { email, password } = req.body
+      const { email, password } = req.body;
       console.log(email, password);
-      const result = await this.userService.Login(email, password)
-      if (result?.data.data?.succuss === true) {
-        // console.log("yy", result)
-        const time = this.milliseconds(23, 30, 0);
+  
+      const result = await this.userService.login(email, password);
+      console.log("yy", result?.result?.isVerified);
+  
+      if (result?.result?.isVerified === false) {
+        res.json({ isverified: false, message: 'User not verified', result });
+        return;
+      }
+  
+      if (result?.data?.data?.succuss === true) {
         const access_token = result.data.data.token;
         const refresh_token = result.data.data.refreshToken;
-        const accessTokenMaxAge = 5 * 60 * 1000;
-        const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
-        res.status(200).cookie('access_token', access_token, {
-          maxAge: accessTokenMaxAge,
-          sameSite: 'none',
-          secure: true
-        }).cookie("refresh_token", refresh_token, {
-          maxAge: refreshTokenMaxAge,
-          sameSite: "none",
-          secure: true
-        }).json(result.data)
+        const accessTokenMaxAge = 5 * 60 * 1000; // 5 minutes
+        const refreshTokenMaxAge = 48 * 60 * 60 * 1000; // 48 hours
+  
+        res.status(200)
+          .cookie('access_token', access_token, {
+            maxAge: accessTokenMaxAge,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+          })
+          .cookie('refresh_token', refresh_token, {
+            maxAge: refreshTokenMaxAge,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+          })
+          .json({ success: true, data: result.data.data });
       } else {
-        res.status(404).json({ success: false, message: 'Authentication error' });
-
+        res.json({ IsData: false, message: 'Invalid email or password', result });
       }
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Internal server error' })
-
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-
   }
+  
+  
   async resendOtp(req: Request, res: Response): Promise<void> {
     try {
       const email = req.session.email;
       const name = req.session.name;
+      console.log(email,name);
+      
       if (!email || !name) {
         res.status(400).json({ error: 'Email or name is missing' });
         return;
@@ -113,7 +128,7 @@ class UserController {
       const otpExpirationTime = currentTime + 30 * 1000;
       req.session.otpTime = otpExpirationTime;
       req.session.otp = otp;
-      res.status(200).json({ message: 'OTP sent successfully' });
+      res.status(200).json({ message: 'OTP sent successfully',isOtp:true });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Failed to send OTP' });

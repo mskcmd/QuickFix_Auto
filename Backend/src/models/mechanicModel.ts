@@ -22,11 +22,15 @@ const mechanicSchema = new Schema<MechnicDoc>({
   },
   isVerified: {
     type: Boolean,
-    default: false 
+    default: false
   },
   isMechanic: {
     type: Boolean,
     default: true
+  },
+  isCompleted: {
+    type: Boolean,
+    default: false
   }
 });
 

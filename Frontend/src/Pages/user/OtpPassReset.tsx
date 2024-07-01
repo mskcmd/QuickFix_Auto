@@ -4,6 +4,8 @@ import {  useNavigate, useParams } from "react-router-dom";
 import { UserData } from "../../app/slice/AuthSlice";
 import { useAppSelector } from "../../app/store";
 
+
+
 interface OTPComponentProps {}
 
 const OTPComponent: React.FC<OTPComponentProps> = () => {
@@ -12,9 +14,9 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
   const [otp, setOTP] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(30);
   const [isOtpExpired, setIsOtpExpired] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New state variable
-  const params = useParams<{ userId: string }>(); // Updated type for params
-  const userId = params.userId || ''; // Ensure userId is not undefined
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const params = useParams<{ userId: string }>(); 
+  const userId = params.userId || ''; 
   
   const userData: UserData | null = useAppSelector(
     (state) => state.auth.userData

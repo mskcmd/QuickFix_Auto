@@ -70,10 +70,9 @@ class UserServices {
         console.log("myyyyy", result)
         return { status: true, result, message: 'successful' };
     }
-    async Login(email: string, password: string) {
+    async login(email: string, password: string) {
         try {
             const result = await this.userRepo.login(email, password)
-            console.log(result?.status == true);
             if (result?.status == true) {
                 const token = this.createjwt.generateToken(result.user?.id);
                 const refreshToken = this.createjwt.generateRefreshToken(result.user?.id)
@@ -91,9 +90,7 @@ class UserServices {
                 }
             } else {
                 return {
-                    data: {
-                        succuss: false,
-                    }
+                    result
                 }
             }
         } catch (error) {
@@ -133,7 +130,7 @@ class UserServices {
             if (!result) {
                 throw new Error('Failed to reset password');
             }
-            return { succuss: true, result }
+            return { succuss: true, result ,message:"Successfully changed password."}
         } catch (error) {
             console.error('Error in UserService.resetPassword:', error);
             throw error;

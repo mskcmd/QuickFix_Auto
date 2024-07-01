@@ -34,8 +34,10 @@ export const verifyOtp = async (otpnum: string) => {
 
 export const Login = async (email: string, password: string) => {
     try {
+        console.log("hai sir");
+        
         const result = await Api.post(userRoutes.Login, { email, password })
-        console.log("otp", result);
+        console.log("eeee", result);
         return result
     } catch (error) {
         console.log(error);
@@ -45,7 +47,9 @@ export const Login = async (email: string, password: string) => {
 
 export const resendOtp = async () => {
     try {
-        await Api.get(userRoutes.resendOtp);
+       const result = await Api.get(userRoutes.resendOtp);
+       console.log("resendOtp",result);
+       return result
     } catch (error) {
         console.log(error as Error);
     }

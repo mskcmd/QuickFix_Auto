@@ -7,9 +7,9 @@ export interface MechnicDoc extends Document{
   password: string;
   isVerified?: boolean;
   isMechanic?:boolean
+  isCompleted?:boolean
 }
 
-// types.ts
 import { SessionData } from 'express-session';
 
 declare module 'express-session' {

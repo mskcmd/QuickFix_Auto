@@ -7,6 +7,7 @@ import Home from "../Pages/user/Home.tsx";
 import ForgertPasswort from "../Pages/user/ForgertPasswort.tsx";
 import RestOtp from "../Pages/user/RestOtp.tsx";
 import OTPComponent from "../Pages/user/OtpPassReset.tsx";
+import Erorr404 from "../Components/Common/ErorrPage/Erorr404.tsx";
 
 function userRoutes() {
   return (
@@ -19,8 +20,8 @@ function userRoutes() {
         <Route path="signup" element={<SignupPage />} />
         <Route path="forgetPassword" element={<ForgertPasswort/>}/>
         <Route path="/reset/:userid" element={<RestOtp/>}/>
-
       </Route>
+      <Route path="*" element={<Erorr404/>}></Route>
     </Routes>
   );
 }

@@ -1,4 +1,3 @@
-import { RegData } from "../Components/Mechanic/MechanicCommen/RegisterOne";
 import { FromData } from "../Pages/mechanic/SignupPage"
 import mechanicRoute from "../Services/Endpoints/mechanicEndPointes";
 import Api from "../Services/axios";
@@ -44,24 +43,13 @@ export const resendOtp = async () => {
 export const Login = async (email: string, password: string) => {
     try {
         const result = await Api.post(mechanicRoute.Login, { email, password })
-        console.log(result);
+        console.log("dsf",result);
         return result
     } catch (error) {
         console.log(error);
 
     }
 }
-export const register = async ({role, name, location, services, employeeCount, companyCertificate, licenseNumber, images, companyDescription, experience}:RegData) => {
-    try {
-        const result = await Api.put(mechanicRoute.Register, { role, name ,location,services,employeeCount,companyCertificate,licenseNumber,images,companyDescription,experience})
-        // console.log(result);
-        return result
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-
 export const forgetPassword = async (email: string) => {
     try {
         console.log("email",email);
@@ -91,7 +79,6 @@ export const verifyOtpReset = async (otpnum: string, userId: string) => {
 export const resetPassword = async (password: string, userId: string) => {
     try {
         console.log("rgtre", password, userId);
-        
         const result = await Api.post(mechanicRoute.resetPassword,{password,userId})
         console.log("",result);
         return result

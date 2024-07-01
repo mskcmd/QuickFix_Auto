@@ -1,7 +1,7 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ResesetPassword } from '../../Components/Common/Validations'; // Corrected import statement
+import { ResetPasswordValidation } from '../../Components/Common/Validations'; // Corrected import statement
 import { resetPassword } from '../../Api/mechanic';
 
 interface FormValues {
@@ -41,7 +41,7 @@ console.log("jk",userId);
         <h2 className="text-2xl font-bold mb-6 text-center">Reset Password</h2>
         <Formik
           initialValues={initialValues}
-          validationSchema={ResesetPassword}
+          validationSchema={ResetPasswordValidation}
           onSubmit={handleSubmit}
         >
           <Form>

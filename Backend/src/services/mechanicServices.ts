@@ -61,10 +61,11 @@ class mechanicServices {
         return { status: true, result, message: "successful" };
     }
 
-    async Login(email: string, password: string) {
+    async login(email: string, password: string) {
         try {
             const result = await this.mechanicRepo.login(email, password)
-            console.log(result?.status == true);
+            console.log("re",result);
+            
             if (result?.status == true) {
                 const token = this.createjwt.generateToken(result.mechanic?.id);
                 const refreshToken = this.createjwt.generateRefreshToken(result.mechanic?.id)
@@ -82,9 +83,7 @@ class mechanicServices {
                 }
             } else {
                 return {
-                    data: {
-                        succuss: false,
-                    }
+                    result
                 }
             }
         } catch (error) {

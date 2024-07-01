@@ -22,12 +22,14 @@ const userSchema = new Schema<UserDoc>({
   },
   isVerified: {
     type: Boolean,
-    default: false 
+    default: false
   },
   isUser: {
     type: Boolean,
     default: true
   }
+}, {
+  timestamps: true 
 });
 
 const User: Model<UserDoc> = mongoose.model("User", userSchema);

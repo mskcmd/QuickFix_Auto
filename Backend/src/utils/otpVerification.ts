@@ -29,7 +29,7 @@ export const sendVerifyMail = async (name: string, email: string): Promise<strin
             `
         };
         await transporter.sendMail(mailOptions);
-        console.log(typeof(OTP));
+        console.log("jjj",typeof(OTP));
         
         return OTP;
 

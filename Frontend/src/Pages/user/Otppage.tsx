@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { resendOtp, verifyOtp } from "../../Api/user";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserData } from "../../app/slice/AuthSlice";
 import { useAppSelector } from "../../app/store";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface OTPComponentProps {}
 
@@ -14,9 +14,6 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
   const [seconds, setSeconds] = useState<number>(30);
   const [isOtpExpired, setIsOtpExpired] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false); // New state variable
-  const location = useLocation()
-    const path = location.pathname.split('/')
-    console.log("hjh",path.includes("forget"));
 
   const userData: UserData | null = useAppSelector(
     (state) => state.auth.userData
@@ -50,15 +47,18 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
   };
 
   const handleVerify = async () => {
-    if (isLoading) return; 
+    if (isLoading) return;
 
-    setIsLoading(true); 
+    setIsLoading(true);
 
     try {
       console.log(otp);
       const result = await verifyOtp(otp);
       console.log("Resultq:", result);
-    
+      console.log("pppp:", result?.data.Isexpired);
+      if (result?.data.Isexpired == true) {
+        toast.error(result?.data.message);
+      }
       if (result?.data.isUser === true) {
         navigate("/login");
         toast.success("Registration Successful");
@@ -68,23 +68,26 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
     } catch (error) {
       console.log(error as Error);
     } finally {
-      setIsLoading(false); // Set the loading state back to false
+      setIsLoading(false); 
     }
   };
 
   const resendOTP = async () => {
-    if (isLoading) return; // Return if the function is already executing
+    if (isLoading) return; 
 
-    setIsLoading(true); // Set the loading state to true
+    setIsLoading(true); 
 
     try {
-      await resendOtp();
-      setSeconds(30); // Reset the timer when resending OTP
+      const result = await resendOtp();
+      setSeconds(30); 
       setIsOtpExpired(false);
+      if(result?.data.isOtp==true){
+      toast.success(result?.data.message)
+      }
     } catch (error) {
       console.log(error as Error);
     } finally {
-      setIsLoading(false); // Set the loading state back to false
+      setIsLoading(false); 
     }
   };
 
@@ -109,10 +112,7 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
         <div className="flex items-center flex-col justify-between mb-6">
           <p className="text-gray-600 text-sm">
             Didn't receive code?{" "}
-            <span
-              onClick={resendOTP}
-              className="text-blue-500 cursor-pointer"
-            >
+            <span onClick={resendOTP} className="text-blue-500 cursor-pointer">
               click here
             </span>
           </p>
@@ -139,7 +139,8 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
           className="w-full px-4 py-2 text-lg font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-transform transform hover:scale-105"
           disabled={isLoading} // Disable the button when loading
         >
-          {isLoading ? "Loading..." : "Verify"} {/* Change the button text when loading */}
+          {isLoading ? "Loading..." : "Verify"}{" "}
+          {/* Change the button text when loading */}
         </button>
       </div>
     </div>

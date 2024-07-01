@@ -5,6 +5,7 @@ import { Login } from "../../Api/mechanic";
 import { useDispatch } from "react-redux";
 import { setMechanicCredential } from "../../app/slice/AuthSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface IinitialValues {
   email: string;
@@ -25,9 +26,17 @@ const LoginPage: React.FC = () => {
       const handleSubmit = async () => {
         try {
           const data = await Login(values.email, values.password);
-          console.log("cccc",data?.data.data);
+          console.log("data",data);
+          
+          if (data?.data.isverified == false) {
+            return toast.error(data?.data.message);
+          }
+          if (data?.data.IsData == false) {
+            return toast.error(data?.data.message);
+          }
           dispatch(setMechanicCredential(data?.data.data));
           navigate("/mechanic/Home");
+          toast.success("Login succussfilly");
         } catch (error) {
           console.log(error);
         }
@@ -83,16 +92,16 @@ const LoginPage: React.FC = () => {
             </button>
             <div className="flex justify-between mt-4">
               <p className="text-sm text-gray-600">
-              <Link to="/mechanic/forgetPassword">
-                <a  className="text-indigo-600 hover:text-indigo-800">
-                  Forgot Password?
-                </a>
+                <Link to="/mechanic/forgetPassword">
+                  <a className="text-indigo-600 hover:text-indigo-800">
+                    Forgot Password?
+                  </a>
                 </Link>
               </p>
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
                 <Link to="/mechanic/signup">
-                  <a  className="text-indigo-600 hover:text-indigo-800">
+                  <a className="text-indigo-600 hover:text-indigo-800">
                     Sign Up
                   </a>
                 </Link>

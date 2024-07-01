@@ -14,7 +14,6 @@ class UserRepository {
       
       const userData: UserDoc | null = await User.findOne({ email }).exec();
       console.log("ff",userData);
-      
       return userData;
     } catch (error) {
       console.error("Error in findUserByEmail:", error);
@@ -46,20 +45,36 @@ class UserRepository {
 
   async login(email: string, password: string) {
     try {
-      const user = await User.findOne({ email });
+      // Find the user and exclude the password field for the user object returned
+      const user = await User.findOne({ email }).select('-password');
+      console.log("user", user);
+  
       if (!user) {
         return { status: false, message: "User not found." };
-
       }
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!user.isVerified) {
+        return { isVerified: false, message: "User not verified." };
+      }
+  
+      // Find the user with the password field included for comparison
+      const userWithPassword = await User.findOne({ email }).select('+password');
+      if (!userWithPassword) {
+        return { status: false, message: "User not found for password validation." };
+      }
+  
+      const isPasswordValid = await bcrypt.compare(password, userWithPassword.password);
       if (!isPasswordValid) {
         return { status: false, message: "Invalid password." };
       }
+  
       return { status: true, user };
     } catch (error) {
       console.error(error);
+      return { status: false, message: "An error occurred during login." };
     }
   }
+  
+  
   async resetPassword(password: string,userId: string ) {
     try {
       

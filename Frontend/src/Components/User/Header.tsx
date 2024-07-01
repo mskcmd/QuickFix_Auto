@@ -1,5 +1,6 @@
 import { UserData } from "../../app/slice/AuthSlice";
 import { useAppSelector } from "../../app/store";
+import { Link } from "react-router-dom";
 
 function Header() {
   const userData: UserData | null = useAppSelector(
@@ -28,9 +29,11 @@ function Header() {
             <span className="text-white font-bold">{userData.data.name}</span>
           </div>
         ) : (
+          <Link to="/login">
           <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
             Login
           </button>
+          </Link>
         )}
       </div>
     </header>

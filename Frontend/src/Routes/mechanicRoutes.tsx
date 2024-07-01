@@ -4,7 +4,7 @@ import LoginPage from "../Pages/mechanic/LoginPage"
 import SignupPage from "../Pages/mechanic/SignupPage"
 import MOtppage from "../Pages/mechanic/Otppage.tsx";
 import MechanicLoggedin from "../Components/Mechanic/MechanicCommen/MechanicLoggedin.tsx";
-import RegisterOne from "../Components/Mechanic/MechanicCommen/RegisterOne.tsx";
+import RegisterOne from "../Pages/mechanic/RegisterOne.tsx";
 import MechanicHome from "../Pages/mechanic/MechanicHome.tsx";
 import ForgotPassword from "../Pages/mechanic/ForgotPassword.tsx";
 import OTPComponent1 from "../Pages/mechanic/OtpPassReset.tsx";

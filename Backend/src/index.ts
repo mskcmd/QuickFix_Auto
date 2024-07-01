@@ -3,10 +3,10 @@ import http from "http";
 import {connectDB} from "../config/mongoConfig"
 import authRoute from "./routes/authRoutes"
 import mechanicRoute from "./routes/mechanicRoute"
-
 import cors from "cors"
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
+import {errorHandler,notFound} from "./middleware/errorMiddleware"
 
 // Generate a UUID
 const uuid = uuidv4();
@@ -32,10 +32,13 @@ credentials:true
 }))
 
 
+
 // Routes
 app.use("/api/auth",authRoute)
 app.use("/api/mechanic/",mechanicRoute)
 
+app.use(notFound)
+app.use(errorHandler)
 
 const server = http.createServer(app)
 server.listen(port, () => {

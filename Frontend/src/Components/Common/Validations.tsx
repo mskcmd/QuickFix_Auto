@@ -2,6 +2,8 @@
 import * as Yup from "yup";
 
 const MOBILE_NUM_REGEX = /^[0-9]{10}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 
 export const SignupValidation = Yup.object({
   name: Yup.string()
@@ -11,15 +13,16 @@ export const SignupValidation = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string()
-    .matches(MOBILE_NUM_REGEX, "Phone number is not valid")
+    .matches(MOBILE_NUM_REGEX, "Phone number is not valid") 
     .required("Phone number is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .matches(PASSWORD_REGEX, "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character")
     .required("Password is required"),
   cpassword: Yup.string()
-    .oneOf([Yup.ref("password"), null as any], "Passwords must match")
+    .oneOf([Yup.ref("password"), undefined], "Passwords must match") 
     .required("Confirm Password is required"),
 });
+
 
 export const LoginValidation = Yup.object({
   email: Yup.string()
@@ -55,13 +58,11 @@ export const EmailValidation = Yup.object({
     .required("Email is required"),
 });
 
-export const ResesetPassword = Yup.object({
+export const ResetPasswordValidation = Yup.object({
   newPassword: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
+    .matches(PASSWORD_REGEX, 'Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character')
     .required('New Password is required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('newPassword')], 'Passwords must match')
-    .nullable()
+    confirmPassword: Yup.string()
+    .oneOf([Yup.ref('newPassword'), undefined], 'Passwords must match')
     .required('Confirm Password is required'),
 });
-
