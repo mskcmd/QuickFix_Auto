@@ -5,12 +5,11 @@ import Modal from "react-modal";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Model.css";
-import { LatLngTuple } from 'leaflet';
-
+import { LatLngTuple } from "leaflet";
 Modal.setAppElement("#root");
 
 const MechanicRegisterForm: React.FC = () => {
-  const [formData, setFormData] = useState({
+   const [formData, setFormData] = useState({
     type: "",
     licenseNumber: "",
     yearsOfExperience: "",
@@ -81,32 +80,44 @@ const MechanicRegisterForm: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-
+  
     if (!formData.type) newErrors.type = "Please select your type";
-    if (!formData.licenseNumber)
-      newErrors.licenseNumber = "License number is required";
-    if (!formData.yearsOfExperience)
-      newErrors.yearsOfExperience = "Years of experience is required";
+    
+    if (!formData.licenseNumber || !/^\d+$/.test(formData.licenseNumber) || formData.licenseNumber.length < 10)
+      newErrors.licenseNumber = "License number must be a positive number with at least 10 digits";
+    
+    if (!formData.yearsOfExperience || !/^\d+$/.test(formData.yearsOfExperience))
+      newErrors.yearsOfExperience = "Years of experience must be a positive number";
+    
     if (!formData.specialization)
       newErrors.specialization = "Specialization is required";
-    if (!formData.location) newErrors.location = "Location is required";
-    if (formData.services.length === 0)
-      newErrors.services = "At least one service is required";
+    
+    if (!formData.location)
+      newErrors.location = "Location is required";
+    
+    if (formData.services.length === 0 || formData.services.length < 10)
+      newErrors.services = "At least 10 services are required";
+    
     if (!formData.description)
       newErrors.description = "Description is required";
-    if (formData.profileImages.length === 0)
-      newErrors.profileImages = "At least one profile image is required";
-    if (!formData.certificate)
-      newErrors.certificate = "Certificate is required";
-
+    
+    if (formData.profileImages.length === 0 || formData.profileImages.length < 4)
+      newErrors.profileImages = "At least 4 profile images are required";
+    
+    if (!formData.certificate || !formData.certificate.name.toLowerCase().endsWith(".pdf"))
+      newErrors.certificate = "Certificate file is required in PDF format";
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       console.log("Form data:", formData);
+      
     } else {
       console.log("Form has errors");
     }
@@ -626,3 +637,4 @@ const MechanicRegisterForm: React.FC = () => {
 };
 
 export default MechanicRegisterForm;
+
