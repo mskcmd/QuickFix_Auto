@@ -8,6 +8,7 @@ export interface MechnicDoc extends Document{
   isVerified?: boolean;
   isMechanic?:boolean
   isCompleted?:boolean
+  mechanicdataID?:string
 }
 
 import { SessionData } from 'express-session';
@@ -20,4 +21,29 @@ declare module 'express-session' {
     mechanicemail:string;
     mechanicotpTime:number;
   }
+}
+
+
+export interface IMechanicData extends Document {
+  ID?: string;
+  type: string;
+  licenseNumber: string;
+  yearsOfExperience: number; // Changed to number for consistency
+  specialization: string;
+  location: string;
+  locationName: string;
+  services: string[];
+  description: string;
+  profileImages: { url: string; contentType: string }[];
+  certificate: { url: string; contentType: string } | null;
+}
+
+
+
+export interface UploadedFile {
+  [key: string]: {
+    originalname: string;
+    buffer: Buffer;
+    mimetype: string;
+  }[];
 }

@@ -4,21 +4,17 @@ import { MechnicDoc } from "../interfaces/IMechanic";
 
 const mechanicSchema = new Schema<MechnicDoc>({
   name: {
-    type: String,
-    required: true
+    type: String
   },
   email: {
     type: String,
-    required: true,
     unique: true
   },
   phone: {
-    type: String,
-    required: true
+    type: String
   },
   password: {
-    type: String,
-    required: true
+    type: String
   },
   isVerified: {
     type: Boolean,
@@ -31,7 +27,11 @@ const mechanicSchema = new Schema<MechnicDoc>({
   isCompleted: {
     type: Boolean,
     default: false
-  }
+  },
+  mechanicdataID: { 
+    type: Schema.Types.ObjectId,
+    default: ""
+  },
 });
 
 const Mechanic: Model<MechnicDoc> = mongoose.model("Mechanic", mechanicSchema);

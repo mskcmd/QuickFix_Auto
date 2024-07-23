@@ -1,6 +1,6 @@
 import MechnicRepositories from "../repositories/mechanicRepositories";
 import OtpRepository from "../repositories/otpRepositories";
-import { MechnicDoc } from "../interfaces/IMechanic";
+import { IMechanicData, MechnicDoc } from "../interfaces/IMechanic";
 import { sendVerifyMail } from "../utils/otpVerification";
 import bcrypt from "bcrypt";
 import { CreateJWT } from "../utils/generateToken";
@@ -142,6 +142,32 @@ class mechanicServices {
         }
     }
 
+    
+    async registerMechData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
+        try {
+          console.log(uploadUrls, body);
+    
+          const result = await this.mechanicRepo.registerData(uploadUrls, body);
+          return result;
+        } catch (error) {
+          console.error('Error in registerMechData:', error);
+          throw new Error('Failed to register mechanic data');
+        }
+      }
+
+
+      async getMechData(id: string): Promise<any> {
+        try {
+          const result = await this.mechanicRepo.getmechData(id);
+          console.log("df",result);
+          return result;
+        } catch (error) {
+          console.error("Error in service layer:", error);
+          throw new Error('Failed to fetch mechanic data');
+        }
+      }
+      
+      
 }
 
 

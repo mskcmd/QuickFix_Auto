@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
 import { resetPassword } from '../../Api/user';
 import { ResetPasswordValidation } from '../../Components/Common/Validations'; // Corrected import statement
+import { toast } from "react-toastify";
 
 interface FormValues {
   newPassword: string;
@@ -28,6 +29,7 @@ console.log("jk",userId);
     const result = await resetPassword(values.newPassword, userId); // Pass userId to the resetPassword function
     console.log("kjsd",result);
     if(result?.status==200){
+      toast.success('Successfully changed password.');
       navigate("/login");
     }else{
       console.log("error");

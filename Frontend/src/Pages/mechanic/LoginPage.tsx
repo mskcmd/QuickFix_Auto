@@ -1,4 +1,4 @@
-import React from "react";
+import  { forwardRef } from "react";
 import { useFormik } from "formik";
 import { LoginValidation } from "../../Components/Common/Validations";
 import { Login } from "../../Api/mechanic";
@@ -11,39 +11,38 @@ interface IinitialValues {
   email: string;
   password: string;
 }
-const IinitialValues: IinitialValues = {
+const initialValues: IinitialValues = {
   email: "",
   password: "",
 };
-const LoginPage: React.FC = () => {
+
+const LoginPage = forwardRef<HTMLFormElement>((_props, ref) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { values, handleBlur, handleChange, handleSubmit, errors } = useFormik({
-    initialValues: IinitialValues,
+  const formik = useFormik({
+    initialValues,
     validationSchema: LoginValidation,
-    onSubmit: (values) => {
-      const handleSubmit = async () => {
-        try {
-          const data = await Login(values.email, values.password);
-          console.log("data",data);
-          
-          if (data?.data.isverified == false) {
-            return toast.error(data?.data.message);
-          }
-          if (data?.data.IsData == false) {
-            return toast.error(data?.data.message);
-          }
-          dispatch(setMechanicCredential(data?.data.data));
-          navigate("/mechanic/Home");
-          toast.success("Login succussfilly");
-        } catch (error) {
-          console.log(error);
+    onSubmit: async (values) => {
+      try {
+        const data = await Login(values.email, values.password);
+        console.log("data", data);
+        
+        if (data?.data.isverified === false) {
+          return toast.error(data?.data.message);
         }
-      };
-      handleSubmit();
+        if (data?.data.IsData === false) {
+          return toast.error(data?.data.message);
+        }
+        dispatch(setMechanicCredential(data?.data.data));
+        navigate("/mechanic/Home");
+        toast.success("Login successfully");
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
+
   return (
     <div className="flex justify-center items-center h-screen p-4 bg-gradient-to-r from-gray-800 to-gray-700">
       <div className="h-[85vh] w-[70vh] col-span-6 hidden md:block relative">
@@ -58,30 +57,30 @@ const LoginPage: React.FC = () => {
           Mechanic Login
         </h2>
         <div className="mb-6">
-          <form onSubmit={handleSubmit}>
+          <form ref={ref} onSubmit={formik.handleSubmit}>
             <input
               name="email"
-              value={values.email}
-              onBlur={handleBlur}
-              onChange={handleChange}
+              value={formik.values.email}
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
               placeholder="Username or Email"
               className="w-full px-4 py-2 mb-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {errors.email && (
-              <small className="text-red-500">{errors.email}</small>
+            {formik.errors.email && (
+              <small className="text-red-500">{formik.errors.email}</small>
             )}
 
             <input
               name="password"
-              value={values.password}
-              onBlur={handleBlur}
-              onChange={handleChange}
+              value={formik.values.password}
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
               placeholder="Password"
               type="password"
               className="w-full px-4 py-2 mb-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {errors.password && (
-              <small className="text-red-500">{errors.password}</small>
+            {formik.errors.password && (
+              <small className="text-red-500">{formik.errors.password}</small>
             )}
 
             <button
@@ -93,17 +92,17 @@ const LoginPage: React.FC = () => {
             <div className="flex justify-between mt-4">
               <p className="text-sm text-gray-600">
                 <Link to="/mechanic/forgetPassword">
-                  <a className="text-indigo-600 hover:text-indigo-800">
+                  <span className="text-indigo-600 hover:text-indigo-800">
                     Forgot Password?
-                  </a>
+                  </span>
                 </Link>
               </p>
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
                 <Link to="/mechanic/signup">
-                  <a className="text-indigo-600 hover:text-indigo-800">
+                  <span className="text-indigo-600 hover:text-indigo-800">
                     Sign Up
-                  </a>
+                  </span>
                 </Link>
               </p>
             </div>
@@ -113,6 +112,6 @@ const LoginPage: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default LoginPage;

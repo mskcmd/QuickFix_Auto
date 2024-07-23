@@ -10,6 +10,23 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 //     refreshToken: string;
 //     userId: string;
 // }
+
+export interface MechanicResponse {
+    email: string;
+    isCompleted: boolean;
+    isMechanic: boolean;
+    isVerified: boolean;
+    name: string;
+    phone: string;
+    __v: number;
+    _id: string;
+    mechnicId: string; // Consider correcting the spelling if applicable
+    message: string;
+    refreshToken: string;
+    succuss: boolean; // Consider correcting the spelling if applicable
+    token: string;
+  }
+  
 export interface UserData {
     success: boolean;
     message: string;
@@ -31,7 +48,7 @@ interface  AdminData {
 
 interface AuthState {
     userData: UserData | null;
-    mechanicData:UserData | null;
+    mechanicData:MechanicResponse | null;
     adminData:AdminData | null
 }
 
@@ -50,7 +67,7 @@ export const authSlice = createSlice({
             state.userData = action.payload;
             localStorage.setItem('userInfo', JSON.stringify(action.payload));
         },
-        setMechanicCredential: (state, action: PayloadAction<UserData>) => {
+        setMechanicCredential: (state, action: PayloadAction<MechanicResponse>) => {
             state.mechanicData = action.payload;
             localStorage.setItem('mechInfo', JSON.stringify(action.payload));
         },

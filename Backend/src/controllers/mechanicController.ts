@@ -1,8 +1,10 @@
 import { log } from "util";
-import { MechnicDoc } from "../interfaces/IMechanic";
+import { MechnicDoc, UploadedFile } from "../interfaces/IMechanic";
 import MechanicServices from "../services/mechanicServices";
 import { Request, Response } from "express"
 import { sendVerifyMail } from "../utils/otpVerification";
+import MechanicData from "../models/mechanicdataModel";
+import { uploadFile } from "../middleware/s3UploadMiddleware";
 
 class mechanicController {
   private mechanicServices: MechanicServices;
@@ -188,6 +190,59 @@ class mechanicController {
     }
   }
 
+
+  async mech_register(req: Request, res: Response) {
+    try {
+    console.log('Form Data:', req.body.ID);
+    console.log('Uploaded Files:', req.files);
+    const files = req.files as UploadedFile;
+    const uploadPromises = Object.keys(files).map(async (key) => {
+      const file = files[key][0];
+      const fileUrl = await uploadFile(file);
+      return {
+        [key]: fileUrl 
+      };
+    });
+    const uploadResults = await Promise.all(uploadPromises);
+    const uploadUrls = uploadResults.reduce((acc, obj) => ({ ...acc, ...obj }), {});
+    console.log(uploadUrls);
+    const result = await this.mechanicServices.registerMechData(uploadUrls, req.body);
+    console.log(result,"successfully updted");
+    res.status(201).json({
+      result,
+      status: true,
+      message: 'Successfully created'
+    });
+      } catch (error) {
+    console.error('Error in mechanic register:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async getMechData(req: Request, res: Response): Promise<void> {
+  try {
+    const id = req.query.Id as string;
+    console.log("Received ID:", id);
+
+    if (!id) {
+      res.status(400).json({ error: 'Missing mechanic ID' });
+      return;
+    }
+
+    const mechanicData = await this.mechanicServices.getMechData(id);
+
+    if (!mechanicData) {
+      res.status(404).json({ error: 'Mechanic not found' });
+      return;
+    }
+console.log("mjk",mechanicData);
+
+    res.json(mechanicData);
+  } catch (error) {
+    console.error("Error fetching mechanic data:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 }
 
 export default mechanicController

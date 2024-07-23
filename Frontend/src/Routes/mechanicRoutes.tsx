@@ -9,6 +9,8 @@ import MechanicHome from "../Pages/mechanic/MechanicHome.tsx";
 import ForgotPassword from "../Pages/mechanic/ForgotPassword.tsx";
 import OTPComponent1 from "../Pages/mechanic/OtpPassReset.tsx";
 import RestOtp from "../Pages/mechanic/RestOtp.tsx";
+import Erorr404 from "../Components/Common/ErorrPage/Erorr404.tsx";
+import MechanicProfile from "../Pages/mechanic/MechanicProfile.tsx";
 
 function mechanicRoutes() {
   return (
@@ -23,10 +25,13 @@ function mechanicRoutes() {
       <Route path="reset/:userid" element={<RestOtp/>}/>
 
     </Route>
+    <Route path="*" element={<Erorr404/>}></Route>
+
 
     <Route element={<MechanicLoggedin />}>
       <Route path="register" element={<RegisterOne />} />
       <Route path="home" element={<MechanicHome />} />
+      <Route path="profile" element={<MechanicProfile/>} />
     </Route>
   </Routes>  )
 }

@@ -13,7 +13,7 @@ function MechanicHome() {
       <main className="container mx-auto mt-8">
         <div>
           {/* <h1>Active Menu Item: {activeMenuItem}</h1> */}
-          {activeMenuItem === "Dashboard" && <DashBord />}
+          {activeMenuItem === "Dashboard" && <DashBord />||activeMenuItem === "" && <DashBord />}
           </div>
       </main>
     </div>

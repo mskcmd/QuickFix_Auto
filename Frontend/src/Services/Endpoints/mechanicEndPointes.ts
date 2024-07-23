@@ -4,10 +4,13 @@ const mechanicRoute={
     signup:"/auth/mechanic/signup",
     veryfyOtp: "/auth/mechanic/veryfy-otp",
     resendOtp:"/auth/mechanic/resendotp",
-    Register:"/mechanic/mechanic/register",
     forgetPassword:"/auth/mechanic/forgetPassword",
     veryfyOtpreset:"/auth/mechanic/veryfyotpreset",
     resetPassword:"/auth/mechanic/resetPassword",
+    
+    Register:"/mechanic/register",
+    getData:"/mechanic/getData"
+
 }
 
 export default mechanicRoute

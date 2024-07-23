@@ -35,7 +35,7 @@ credentials:true
 
 // Routes
 app.use("/api/auth",authRoute)
-app.use("/api/mechanic/",mechanicRoute)
+app.use("/api/mechanic",mechanicRoute)
 
 app.use(notFound)
 app.use(errorHandler)

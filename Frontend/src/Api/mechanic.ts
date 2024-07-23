@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+import { MechanicFormData } from "../Pages/mechanic/RegisterOne";
 import { FromData } from "../Pages/mechanic/SignupPage"
 import mechanicRoute from "../Services/Endpoints/mechanicEndPointes";
 import Api from "../Services/axios";
@@ -43,7 +45,7 @@ export const resendOtp = async () => {
 export const Login = async (email: string, password: string) => {
     try {
         const result = await Api.post(mechanicRoute.Login, { email, password })
-        console.log("dsf",result);
+        console.log("dsf", result);
         return result
     } catch (error) {
         console.log(error);
@@ -52,7 +54,7 @@ export const Login = async (email: string, password: string) => {
 }
 export const forgetPassword = async (email: string) => {
     try {
-        console.log("email",email);
+        console.log("email", email);
         const result = await Api.get(mechanicRoute.forgetPassword, { params: { email } });
         console.log(result);
         return result
@@ -63,10 +65,10 @@ export const forgetPassword = async (email: string) => {
 
 export const verifyOtpReset = async (otpnum: string, userId: string) => {
     try {
-        console.log("k",otpnum,userId);
-        
+        console.log("k", otpnum, userId);
+
         const otp = parseInt(otpnum);
-        const result = await Api.get(mechanicRoute.veryfyOtpreset,{params: {otp,userId} } );
+        const result = await Api.get(mechanicRoute.veryfyOtpreset, { params: { otp, userId } });
         console.log("otp", result);
         if (result) {
             return result;
@@ -79,10 +81,68 @@ export const verifyOtpReset = async (otpnum: string, userId: string) => {
 export const resetPassword = async (password: string, userId: string) => {
     try {
         console.log("rgtre", password, userId);
-        const result = await Api.post(mechanicRoute.resetPassword,{password,userId})
-        console.log("",result);
+        const result = await Api.post(mechanicRoute.resetPassword, { password, userId })
+        console.log("", result);
         return result
     } catch (error) {
         console.log(error);
     }
 };
+
+export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicId: string | undefined): Promise<AxiosResponse<unknown>> => {
+    try {
+        const formData = new FormData();
+        // Append basic fields
+        if (mechanicId) {
+            formData.append('ID', mechanicId);
+        }
+        formData.append('type', mechanicData.type);
+        formData.append('licenseNumber', mechanicData.licenseNumber);
+        formData.append('yearsOfExperience', mechanicData.yearsOfExperience);
+        formData.append('specialization', mechanicData.specialization);
+        formData.append('location', mechanicData.location);
+        formData.append('locationName', mechanicData.locationName);
+        formData.append('description', mechanicData.description);
+        // Append files
+        if (mechanicData.certificate) {
+            formData.append('certificate', mechanicData.certificate);
+        }
+        if (mechanicData.profileImages && mechanicData.profileImages.length > 0) {
+            mechanicData.profileImages.forEach((file, index) => {
+                formData.append(`profileImage${index}`, file); // Ensure field names match
+            });
+        }
+        // Append services (if necessary, convert to JSON or a format expected by your API)
+        formData.append('services', JSON.stringify(mechanicData.services));
+
+        // Send the request
+        const result = await Api.post(mechanicRoute.Register, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        console.log("4days",result);
+        return result
+        
+    } catch (error) {
+        console.error('Error during registration:', error);
+        throw error; // Optionally rethrow the error    
+        }
+};
+
+interface MechanicData {
+    isCompleted: boolean;
+    // Add other properties as needed
+  }
+  
+  export const getmechData = async (id: string): Promise<MechanicData> => {
+    try {
+      console.log("nhj", id);
+      const result = await Api.get<MechanicData>(mechanicRoute.getData, { params: { Id: id } });
+      console.log("Mechanic data fetched:", result.data);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching mechanic data:", error);
+      throw error; // Re-throw the error to be handled by the caller
+    }
+  };
