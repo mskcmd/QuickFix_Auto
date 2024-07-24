@@ -14,6 +14,8 @@ const mechanicController = new MechanicController(mechanicServices)
 
 mechanicRoute.post('/register', uploadFields, mechanicController.mech_register.bind(mechanicController));
 mechanicRoute.get("/getData",mechanicController.getMechData.bind(mechanicController))
+mechanicRoute.get("/getmechData",mechanicController.getDetailData.bind(mechanicController))
+
 
 
 export default mechanicRoute

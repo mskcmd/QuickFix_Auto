@@ -28,7 +28,7 @@ const AdminLogin: React.FC = () => {
           const userData = data?.data.data
           console.log("cccc",userData);
           dispatch(setAdminCredential(userData));
-          navigate("/admin/dashbord");
+          navigate("/admin/dashboard");
         } catch (error) {
           console.log(error);
         }

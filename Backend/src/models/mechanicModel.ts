@@ -30,7 +30,16 @@ const mechanicSchema = new Schema<MechnicDoc>({
   },
   mechanicdataID: { 
     type: Schema.Types.ObjectId,
-    default: ""
+    ref: 'MechanicData',
+    default: null  
+  },
+  isSubscriber: {  
+    type: Boolean,
+    default: false
+  },
+  isBlocked: {  
+    type: Boolean,
+    default: false
   },
 });
 

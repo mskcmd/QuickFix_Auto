@@ -3,6 +3,7 @@ import { MechanicFormData } from "../Pages/mechanic/RegisterOne";
 import { FromData } from "../Pages/mechanic/SignupPage"
 import mechanicRoute from "../Services/Endpoints/mechanicEndPointes";
 import Api from "../Services/axios";
+import { MechanicDataItem } from "../Components/Mechanic/MechanicCommen/MechanicLoggedin";
 
 
 export const mechanicSingup = async ({ name, email, phone, password }: FromData) => {
@@ -130,19 +131,24 @@ export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicI
         }
 };
 
-interface MechanicData {
-    isCompleted: boolean;
-    // Add other properties as needed
-  }
-  
-  export const getmechData = async (id: string): Promise<MechanicData> => {
+export const getmechData = async (mechanicId: string): Promise<MechanicDataItem[]> => {
     try {
-      console.log("nhj", id);
-      const result = await Api.get<MechanicData>(mechanicRoute.getData, { params: { Id: id } });
-      console.log("Mechanic data fetched:", result.data);
+      const result = await Api.get<MechanicDataItem[]>(mechanicRoute.getData, { params: { Id: mechanicId } });
       return result.data;
     } catch (error) {
       console.error("Error fetching mechanic data:", error);
-      throw error; // Re-throw the error to be handled by the caller
+      throw error;
     }
   };
+
+  export const  getDetailesData = async (mechanicId: string)=> {
+    try {
+      console.log("Fetching dasta for mechanic ID:", mechanicId);
+      const result = await Api.get(mechanicRoute.getMcechData, { params: { Id: mechanicId } });
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching mechanic data:", error);
+      throw error;
+    }
+  };
+

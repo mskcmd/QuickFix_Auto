@@ -1,19 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-interface NavigationProps {
-  setActiveMenuItem: (item: string) => void;
-}
-
-const Navigation: React.FC<NavigationProps> = ({ setActiveMenuItem }) => {
-  const menuItems = ['Dashboard', 'Customers', 'Service', 'Bookings', 'Payments', 'Blog'];
-  const [activeItem, setActiveItem] = useState('Dashboard');
+const Navigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-    setActiveMenuItem(item);
-    setIsMenuOpen(false);
-  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -21,7 +10,7 @@ const Navigation: React.FC<NavigationProps> = ({ setActiveMenuItem }) => {
 
   return (
     <div className="flex justify-center mt-2">
-      <nav className="bg-black w-full md:w-[80%] shadow-lg rounded-2xl">
+      <nav className="bg-gradient-to-r from-gray-900 to-blue-950 w-full md:w-[80%] shadow-lg rounded-2xl">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center md:hidden">
             <button
@@ -38,29 +27,45 @@ const Navigation: React.FC<NavigationProps> = ({ setActiveMenuItem }) => {
                 </svg>
               )}
             </button>
-            <span className="text-white font-bold">{activeItem}</span>
+            <span className="text-white font-bold">Menu</span>
           </div>
           <ul className={`md:flex md:justify-between md:items-center ${isMenuOpen ? 'block' : 'hidden'}`}>
-            {menuItems.map((item) => (
-              <li key={item} className="relative group">
-                <a
-                  href="#"
-                  onClick={() => handleItemClick(item)}
-                  className={`block px-4 py-3 transition duration-300 ease-in-out ${
-                    activeItem === item 
-                      ? 'text-purple-300'
-                      : 'text-white hover:text-purple-200'
-                  }`}
-                >
-                  {item}
-                  <span 
-                    className={`absolute bottom-0 left-0 w-full h-1 bg-purple-300 transform transition-transform duration-300 ease-in-out ${
-                      activeItem === item ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                    }`}
-                  ></span>
-                </a>
-              </li>
-            ))}
+            <li className="relative group">
+              <Link to="/mechanic/dashboard" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Dashboard
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link to="/mechanic/customers" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Customers
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link to="/mechanic/service" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Service
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link to="/mechanic/bookings" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Bookings
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link to="/mechanic/payments" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Payments
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link to="/mechanic/blog" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+                Blog
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

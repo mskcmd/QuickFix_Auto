@@ -7,6 +7,7 @@ import cors from "cors"
 import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 import {errorHandler,notFound} from "./middleware/errorMiddleware"
+import adminRoute from './routes/adminRoutes';
 
 // Generate a UUID
 const uuid = uuidv4();
@@ -36,6 +37,7 @@ credentials:true
 // Routes
 app.use("/api/auth",authRoute)
 app.use("/api/mechanic",mechanicRoute)
+app.use("/api/admin",adminRoute)
 
 app.use(notFound)
 app.use(errorHandler)

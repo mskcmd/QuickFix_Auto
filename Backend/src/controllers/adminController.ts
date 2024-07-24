@@ -18,8 +18,9 @@ class AdminController{
           const { email, password } = req.body
           console.log("hff",email, password);
           const result = await this.adminServices.Login(email, password)
+          console.log("yy", result)
+
           if (result?.data.data?.succuss === true) {
-            // console.log("yy", result)
             const time = this.milliseconds(23, 30, 0);
             const access_token = result.data.data.token;
             const refresh_token = result.data.data.refreshToken;
@@ -43,6 +44,29 @@ class AdminController{
     
         }
     
+      }
+
+      async getUserhData(req: Request, res: Response): Promise<void> {
+        try {
+          const result = await this.adminServices.getUserData( )
+          res.json(result)
+      
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      }
+
+      async getMechData(req: Request, res: Response): Promise<void> {
+        try {
+          console.log("hjka");
+          const result = await this.adminServices.getMechData( )
+          res.json(result)
+      
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
       }
 }
 

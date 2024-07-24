@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../app/store";
 
 const Header: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -7,20 +9,22 @@ const Header: React.FC = () => {
 
   const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const mechanicData:any= useAppSelector((state) => state.auth.mechanicData);
+
+  const nameInitials = mechanicData?.data?.name ? mechanicData.data.name.slice(0, 2).toUpperCase() : "MG";
 
   return (
     <header className="bg-gray-900 p-2 shadow-lg relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <div className="bg-purple-600 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-300">
-            <span className="text-white text-sm sm:text-xl font-bold">MG</span>
+            <span className="text-white text-sm sm:text-xl font-bold">{nameInitials}</span>
           </div>
           <span className="text-lg sm:text-2xl font-bold text-white tracking-wide">
-            MG Service Store
+            {mechanicData?.data?.name || "MG Service Store"}
           </span>
         </div>
 
-        {/* Desktop menu */}
         <div className="hidden md:flex items-center space-x-4">
           <NavButton icon="message" count={3} />
           <NavButton icon="notification" count={5} />
@@ -32,7 +36,6 @@ const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile menu button */}
         <button
           className="md:hidden p-2 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-full"
           onClick={toggleMobileMenu}
@@ -54,7 +57,6 @@ const Header: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden mt-2 p-2 bg-gray-800 rounded-lg">
           <div className="flex justify-around">
@@ -70,10 +72,8 @@ const Header: React.FC = () => {
         </div>
       )}
 
-      {/* Settings Modal */}
-      {isSettingsOpen && <SettingsModal toggleSettings={toggleSettings} />}
+      {isSettingsOpen && <SettingsModal toggleSettings={toggleSettings} mechanicData={mechanicData?.data} />}
 
-      {/* Overlay */}
       {isSettingsOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -158,45 +158,62 @@ const SettingsIcon: React.FC = () => (
 
 interface SettingsModalProps {
   toggleSettings: () => void;
+  mechanicData: any; // You might want to replace 'any' with a more specific type
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ toggleSettings }) => (
+const SettingsModal: React.FC<SettingsModalProps> = ({ toggleSettings, mechanicData }) => (
   <div className="absolute right-4 top-16 w-64 bg-gray-800 rounded-lg shadow-xl overflow-hidden z-50 transform transition-all duration-300 ease-in-out">
     <div className="p-4 bg-black">
-      <h3 className="text-lg font-semibold text-white">Settings</h3>
+      <h3 className="text-lg font-semibold text-white">{mechanicData?.name || 'Settings'}</h3>
     </div>
     <div className="divide-y divide-gray-700">
-      {["Profile", "Feedback", "About"].map((item, index) => (
-        <Link to={`/mechanic/${item.toLowerCase()}`} key={index}>
-          <button className="w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-purple-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              {item === "Profile" && (
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zM5.157 14.85a5 5 0 019.686 0A7.97 7.97 0 0110 18a7.97 7.97 0 01-4.843-1.15z"
-                  clipRule="evenodd"
-                />
-              )}
-              {item === "Feedback" && (
-                <path d="M2 10c0 4.418 4.03 8 9 8 1.24 0 2.42-.234 3.48-.66l2.78.69a1 1 0 001.24-1.24l-.69-2.78A8.001 8.001 0 0020 10c0-4.418-4.03-8-9-8S2 5.582 2 10z" />
-              )}
-              {item === "About" && (
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 4a6 6 0 100 12A6 6 0 0010 4zm0 9a1 1 0 110 2 1 1 0 010-2zm.073-6a1 1 0 00-.822.435L8.25 8.75A1 1 0 109.75 10.25l.293-.293V13a1 1 0 102 0V9a1 1 0 00-.293-.707l-1.12-1.12A1 1 0 0010.073 7z"
-                  clipRule="evenodd"
-                />
-              )}
-            </svg>
-            <span className="text-gray-300">{item}</span>
-          </button>
-        </Link>
-      ))}
+      <Link to="/mechanic/profile" className="block">
+        <button className="w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-purple-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 9a3 3 0 100-6 3 3 0 000 6zM5.157 14.85a5 5 0 019.686 0A7.97 7.97 0 0110 18a7.97 7.97 0 01-4.843-1.15z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span className="text-gray-300">Profile</span>
+        </button>
+      </Link>
+      <Link to="/mechanic/feedback" className="block">
+        <button className="w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-purple-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M2 10c0 4.418 4.03 8 9 8 1.24 0 2.42-.234 3.48-.66l2.78.69a1 1 0 001.24-1.24l-.69-2.78A8.001 8.001 0 0020 10c0-4.418-4.03-8-9-8S2 5.582 2 10z" />
+          </svg>
+          <span className="text-gray-300">Feedback</span>
+        </button>
+      </Link>
+      <Link to="/mechanic/about" className="block">
+        <button className="w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-purple-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 4a6 6 0 100 12A6 6 0 0010 4zm0 9a1 1 0 110 2 1 1 0 010-2zm.073-6a1 1 0 00-.822.435L8.25 8.75A1 1 0 109.75 10.25l.293-.293V13a1 1 0 102 0V9a1 1 0 00-.293-.707l-1.12-1.12A1 1 0 0010.073 7z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span className="text-gray-300">About</span>
+        </button>
+      </Link>
     </div>
     <div className="bg-gray-700 p-2">
       <button

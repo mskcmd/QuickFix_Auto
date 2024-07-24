@@ -213,6 +213,7 @@ class mechanicController {
       status: true,
       message: 'Successfully created'
     });
+    return
       } catch (error) {
     console.error('Error in mechanic register:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -228,21 +229,42 @@ async getMechData(req: Request, res: Response): Promise<void> {
       res.status(400).json({ error: 'Missing mechanic ID' });
       return;
     }
-
     const mechanicData = await this.mechanicServices.getMechData(id);
 
     if (!mechanicData) {
       res.status(404).json({ error: 'Mechanic not found' });
       return;
     }
-console.log("mjk",mechanicData);
-
     res.json(mechanicData);
   } catch (error) {
     console.error("Error fetching mechanic data:", error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+async getDetailData(req: Request, res: Response): Promise<void> {
+  try {
+    const id = req.query.Id as string;
+    console.log("Received ID2:", id);
+
+    if (!id) {
+      res.status(400).json({ error: 'Missing mechanic ID' });
+      return;
+    }
+    const mechanicData = await this.mechanicServices.getDetailData(id);
+
+    if (!mechanicData) {
+      res.status(404).json({ error: 'Mechanic not found' });
+      return;
+    }    
+    res.json(mechanicData);
+  } catch (error) {
+    console.error("Error fetching mechanic data:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
 }
 
 export default mechanicController

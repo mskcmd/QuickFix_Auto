@@ -159,7 +159,16 @@ class mechanicServices {
       async getMechData(id: string): Promise<any> {
         try {
           const result = await this.mechanicRepo.getmechData(id);
-          console.log("df",result);
+          return result;
+        } catch (error) {
+          console.error("Error in service layer:", error);
+          throw new Error('Failed to fetch mechanic data');
+        }
+      }
+
+      async getDetailData(id: string): Promise<any> {
+        try {  
+          const result = await this.mechanicRepo.getDetailData(id);
           return result;
         } catch (error) {
           console.error("Error in service layer:", error);

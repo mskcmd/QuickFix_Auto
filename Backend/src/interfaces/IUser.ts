@@ -7,6 +7,7 @@ export interface UserDoc extends Document{
   password: string;
   isVerified?: boolean;
   isUser?:boolean;
+  isBlocked?:boolean;
 }
 export interface UseLog {
   email:string;

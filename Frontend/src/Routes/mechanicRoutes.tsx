@@ -11,6 +11,8 @@ import OTPComponent1 from "../Pages/mechanic/OtpPassReset.tsx";
 import RestOtp from "../Pages/mechanic/RestOtp.tsx";
 import Erorr404 from "../Components/Common/ErorrPage/Erorr404.tsx";
 import MechanicProfile from "../Pages/mechanic/MechanicProfile.tsx";
+import Dashboard from "../Components/Mechanic/DashBord.tsx";
+import DetailedProfile from "../Pages/mechanic/DetailedProfile.tsx";
 
 function mechanicRoutes() {
   return (
@@ -32,6 +34,12 @@ function mechanicRoutes() {
       <Route path="register" element={<RegisterOne />} />
       <Route path="home" element={<MechanicHome />} />
       <Route path="profile" element={<MechanicProfile/>} />
+      <Route path="profile/detailedProfile" element={<DetailedProfile/>} />
+
+      <Route path="" element={<MechanicHome />}>
+          <Route path="dashboard" element={<Dashboard />} />
+         
+        </Route>
     </Route>
   </Routes>  )
 }

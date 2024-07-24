@@ -153,9 +153,22 @@ class mechanicRepositories {
         }
     }
 
+
     async getmechData(id: string): Promise<any> {
         try {
             const objectId = new mongoose.Types.ObjectId(id);
+            const result = await Mechanic.find({ _id: objectId });
+            return result;
+        } catch (error) {
+            console.error("Error in repository layer:", error);
+            throw new Error('Database query failed');
+        }
+    }
+
+    async   getDetailData(id: string): Promise<any> {
+        try {
+            const objectId = new mongoose.Types.ObjectId(id);
+            console.log("nhj",objectId);
 
             const result = await Mechanic.aggregate([
                 { $match: { _id: objectId } },
@@ -175,14 +188,7 @@ class mechanicRepositories {
                     }
                 }
             ]);
-
-            if (result.length === 0) {
-                console.log("Mechanic not found or no associated mechanic data");
-                return null;
-            }
-
-            console.log("Fetched mechanic data for ID:", id);
-            return result[0];
+            return result
         } catch (error) {
             console.error("Error in repository layer:", error);
             throw new Error('Database query failed');

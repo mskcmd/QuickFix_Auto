@@ -9,7 +9,8 @@ const mechanicRoute={
     resetPassword:"/auth/mechanic/resetPassword",
     
     Register:"/mechanic/register",
-    getData:"/mechanic/getData"
+    getData:"/mechanic/getData",
+    getMcechData:"/mechanic/getmechData"
 
 }
 

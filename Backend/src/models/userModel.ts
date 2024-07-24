@@ -27,6 +27,10 @@ const userSchema = new Schema<UserDoc>({
   isUser: {
     type: Boolean,
     default: true
+  },
+  isBlocked: { // Fixed field name
+    type: Boolean,
+    default: false // Assuming default value is false
   }
 }, {
   timestamps: true 

@@ -9,7 +9,7 @@ function Header() {
   console.log("ee", userData);
 
   return (
-    <header className="bg-gray-800 py-4">
+    <header className="bg-gray-800 py-2">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <img

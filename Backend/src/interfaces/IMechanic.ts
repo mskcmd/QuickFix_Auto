@@ -9,6 +9,8 @@ export interface MechnicDoc extends Document{
   isMechanic?:boolean
   isCompleted?:boolean
   mechanicdataID?:string
+  isBlocked?:boolean;
+  isSubscriber?:boolean;
 }
 
 import { SessionData } from 'express-session';

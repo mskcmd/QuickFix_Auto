@@ -15,6 +15,7 @@ export interface MechanicResponse {
     email: string;
     isCompleted: boolean;
     isMechanic: boolean;
+    isSubscriber?: boolean;
     isVerified: boolean;
     name: string;
     phone: string;
