@@ -4,6 +4,7 @@ import MechanicServices from "../services/mechanicServices";
 import MechanicRepositories from "../repositories/mechanicRepositories";
 import OtpRepository from "../repositories/otpRepositories";
 import { uploadFields } from "../middleware/s3UploadMiddleware";
+import userAuth from "../middleware/userAuthMiddleware";
 
 const mechanicRoute:Router = express.Router()
 
@@ -13,8 +14,8 @@ const mechanicServices = new MechanicServices(mechanicRepositories,otpRepositori
 const mechanicController = new MechanicController(mechanicServices)
 
 mechanicRoute.post('/register', uploadFields, mechanicController.mech_register.bind(mechanicController));
-mechanicRoute.get("/getData",mechanicController.getMechData.bind(mechanicController))
-mechanicRoute.get("/getmechData",mechanicController.getDetailData.bind(mechanicController))
+mechanicRoute.get("/getData",userAuth,mechanicController.getMechData.bind(mechanicController))
+mechanicRoute.get("/getmechData",userAuth,mechanicController.getDetailData.bind(mechanicController))
 
 
 

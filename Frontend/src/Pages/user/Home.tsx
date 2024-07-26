@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import Header from "../../Components/User/Header";
 import Footer from "../../Components/User/Footer";
-import Servicse from "../../Components/User/Servicse";
+import { FAQSection, BlogPreview } from '../../Components/User/FAQSection';
 
 // Assuming you're using a default export for the image
 import image from "../../../public/Designer.png";
@@ -14,10 +14,8 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-100 to-gray-200 min-h-screen">
+    <div className="bg-[#ece8d9] min-h-screen">
       <Header />
-      
-      {/* Hero Section */}
       <div className="relative h-screen">
         <img
           className="w-full h-full object-cover filter brightness-50"
@@ -41,12 +39,12 @@ const Home: React.FC = () => {
       </div>
 
       {/* Booking Form */}
-      <div className="container mx-auto px-4 py-16" ref={bookingFormRef}>
+      <div className="container mx-auto px-4 pt-10" ref={bookingFormRef}>
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-4xl mx-auto transform -translate-y-24">
-          <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Book Your Service</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center text-black">Book Your Service</h2>
           <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <label htmlFor="location" className="block text-sm font-medium text-black mb-2">Location</label>
               <input 
                 id="location"
                 type="text" 
@@ -77,25 +75,25 @@ const Home: React.FC = () => {
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-5">
-        <h2 className="text-4xl font-bold mb-12 text-center text-gray-800">Why Choose Us</h2>
+      <div className="container mx-auto px-4  pb-3">
+        <h2 className="text-4xl font-bold mb-12 text-center text-black">Why Choose Us</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             { title: "Expert Technicians", icon: "👨‍🔧" },
             { title: "Quality Parts", icon: "🔧" },
             { title: "Quick Service", icon: "⚡" },
           ].map((feature, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-2xl transition duration-300">
+            <div key={index} className="bg-white  rounded-xl shadow-lg p-6 text-center hover:shadow-2xl transition duration-300">
               <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h3 className="text-xl font-semibold text-black mb-2">{feature.title}</h3>
+              <p className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Testimonials */}
-      <div className="bg-blue-600 text-white py-16">
+      <div className="bg-white text-black py-16 shadow-sm">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold mb-12 text-center">What Our Customers Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -103,7 +101,7 @@ const Home: React.FC = () => {
               { name: "John Doe", text: "Excellent service! My car runs like new." },
               { name: "Jane Smith", text: "Professional and friendly staff. Highly recommended!" },
             ].map((testimonial, index) => (
-              <div key={index} className="bg-blue-700 rounded-xl p-6">
+              <div key={index} className="bg-white drop-shadow-2xl rounded-full p-6">
                 <p className="mb-4 italic">"{testimonial.text}"</p>
                 <p className="font-semibold">- {testimonial.name}</p>
               </div>
@@ -112,7 +110,8 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <Servicse />
+      <BlogPreview />
+      <FAQSection />
       <Footer />
     </div>
   );

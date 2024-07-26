@@ -8,6 +8,7 @@ import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 import {errorHandler,notFound} from "./middleware/errorMiddleware"
 import adminRoute from './routes/adminRoutes';
+import cookieParser from 'cookie-parser';
 
 // Generate a UUID
 const uuid = uuidv4();
@@ -23,7 +24,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
 }));
-
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({

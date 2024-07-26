@@ -113,7 +113,6 @@ class mechanicRepositories {
             ]
                 .filter(Boolean)
                 .map(formatImage);
-            console.log("ght", body.mechanicID);
             const mechanicID = Types.ObjectId.createFromHexString(body.ID)
             const mechanicData = new MechanicData({
                 mechanicID: mechanicID,
@@ -132,7 +131,6 @@ class mechanicRepositories {
             });
 
             const result = await mechanicData.save();
-            console.log("nfd", result._id);
             if (result) {
                 await Mechanic.findOneAndUpdate(
                     { _id: mechanicID },
@@ -168,8 +166,6 @@ class mechanicRepositories {
     async   getDetailData(id: string): Promise<any> {
         try {
             const objectId = new mongoose.Types.ObjectId(id);
-            console.log("nhj",objectId);
-
             const result = await Mechanic.aggregate([
                 { $match: { _id: objectId } },
                 {

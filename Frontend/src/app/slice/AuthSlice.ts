@@ -29,6 +29,7 @@ export interface MechanicResponse {
   }
   
 export interface UserData {
+    name: ReactNode;
     success: boolean;
     message: string;
     data: {

@@ -27,6 +27,7 @@ const adminServices = new AdminServices(adminRepositories)
 const adminController = new AdminController(adminServices)
 
 
+
 authRoute.post("/signup",userController.signup.bind(userController))
 authRoute.post("/veryfy-otp",userController.veryfyOtp.bind(userController))
 authRoute.post("/login",userController.login.bind(userController))
