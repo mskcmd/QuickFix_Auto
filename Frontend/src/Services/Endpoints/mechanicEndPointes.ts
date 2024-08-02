@@ -7,7 +7,8 @@ const mechanicRoute={
     forgetPassword:"/auth/mechanic/forgetPassword",
     veryfyOtpreset:"/auth/mechanic/veryfyotpreset",
     resetPassword:"/auth/mechanic/resetPassword",
-    
+    mechLogout:"/auth/mechanic/mechLogout",
+
     Register:"/mechanic/register",
     getData:"/mechanic/getData",
     getMcechData:"/mechanic/getmechData"

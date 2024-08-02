@@ -5,6 +5,7 @@ import { Login } from "../../Api/admin";
 import { useDispatch } from "react-redux";
 import { setAdminCredential } from "../../app/slice/AuthSlice";
 import {  useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface IinitialValues {
   email: string;
@@ -28,7 +29,9 @@ const AdminLogin: React.FC = () => {
           const userData = data?.data.data
           console.log("cccc",userData);
           dispatch(setAdminCredential(userData));
-          navigate("/admin/dashboard");
+          navigate("/admin/dashboard/dashboard"); 
+          toast.success("admin is logined!"); 
+
         } catch (error) {
           console.log(error);
         }

@@ -34,7 +34,6 @@ credentials:true
 }))
 
 
-
 // Routes
 app.use("/api/auth",authRoute)
 app.use("/api/mechanic",mechanicRoute)

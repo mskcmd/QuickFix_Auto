@@ -20,9 +20,9 @@ class AdminServices {
             if (result?.status == true) {
                 console.log("qyy", result)
 
-                const token = this.createjwt.generateToken(result.admin?.id);
-                const refreshToken = this.createjwt.generateRefreshToken(result.admin?.id)
-                console.log("jhk", token, refreshToken)
+                const admin_token = this.createjwt.generateToken(result.admin?.id);
+                const admin_refreshToken = this.createjwt.generateRefreshToken(result.admin?.id)
+                console.log("jhk", admin_token, admin_refreshToken)
 
                 return {
                     data: {
@@ -31,8 +31,8 @@ class AdminServices {
                             message: 'Authentication Successful !',
                             data: result.admin,
                             adminId: result.admin?._id,
-                            token: token,
-                            refreshToken: refreshToken
+                            admin_token: admin_token,
+                            admin_refreshToken: admin_refreshToken
                         }
                     }
                 }

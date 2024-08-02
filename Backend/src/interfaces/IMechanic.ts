@@ -1,16 +1,16 @@
-import {Document} from "mongoose"
+import { Document } from "mongoose"
 
-export interface MechnicDoc extends Document{
+export interface MechnicDoc extends Document {
   name: string;
   email: string;
   phone: string;
   password: string;
   isVerified?: boolean;
-  isMechanic?:boolean
-  isCompleted?:boolean
-  mechanicdataID?:string
-  isBlocked?:boolean;
-  isSubscriber?:boolean;
+  isMechanic?: boolean
+  isCompleted?: boolean
+  mechanicdataID?: string
+  isBlocked?: boolean;
+  isSubscriber?: boolean;
 }
 
 import { SessionData } from 'express-session';
@@ -19,9 +19,9 @@ declare module 'express-session' {
   interface SessionData {
     mechotp: string;
     mechanicId: string;
-    mechanicname:string;
-    mechanicemail:string;
-    mechanicotpTime:number;
+    mechanicname: string;
+    mechanicemail: string;
+    mechanicotpTime: number;
   }
 }
 
@@ -32,7 +32,9 @@ export interface IMechanicData extends Document {
   licenseNumber: string;
   yearsOfExperience: number; // Changed to number for consistency
   specialization: string;
-  location: string;
+  latitude: string,
+  longitude: string,
+  district: string,
   locationName: string;
   services: string[];
   description: string;

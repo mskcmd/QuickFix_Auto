@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../app/store";
 import { getmechData } from "../../../Api/mechanic";
-import { showCustomToast } from "../../../Components/Common/Tost/Tost";
+// import { showCustomToast } from "../../../Components/Common/Tost/Tost";
 
 // Define the type for a single item in the mechanic data
 export type MechanicDataItem = {
@@ -28,13 +28,15 @@ const MechanicLoggedin: React.FC = () => {
     const fetchMechanicData = async () => {
       if (mechanicData?.mechnicId) {
         try {
-          const result: MechanicDataItem[] = await getmechData(mechanicData.mechnicId);
+          const result: MechanicDataItem[] = await getmechData(
+            mechanicData.mechnicId
+          );
           console.log("Fetched mechanic data:", result[0]?.isCompleted);
 
-          if (result.length > 0 && !result[0].isCompleted) {
-            showCustomToast(); 
-            navigate("/mechanic/register");
-          }
+          // if (result.length > 0 && !result[0].isCompleted) {
+          //   showCustomToast();
+          //   navigate("/mechanic/register");
+          // }
         } catch (error) {
           console.error("Failed to fetch mechanic data:", error);
         }

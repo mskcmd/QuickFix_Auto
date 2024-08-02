@@ -96,62 +96,120 @@ class mechanicRepositories {
         }
     }
 
+    // async registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
+    //     try {
+    //         console.log("Processing data...");
+
+    //         const formatImage = (url: string): { url: string; contentType: string } => ({
+    //             url,
+    //             contentType: 'image/jpeg',
+    //         });
+
+    //         const profileImages = [
+    //             uploadUrls.profileImage0,
+    //             uploadUrls.profileImage1,
+    //             uploadUrls.profileImage2,
+    //             uploadUrls.profileImage3,
+    //         ]
+    //             .filter(Boolean)
+    //             .map(formatImage);
+    //         const mechanicID = Types.ObjectId.createFromHexString(body.ID)
+    //         const mechanicData = new MechanicData({
+    //             mechanicID: mechanicID,
+    //             type: body.type,
+    //             licenseNumber: body.licenseNumber,
+    //             yearsOfExperience: body.yearsOfExperience,
+    //             specialization: body.specialization,
+    //             district: body.district,
+    //             latitude: body.latitude,
+    //             longitude: body.longitude,
+    //             locationName: body.locationName,
+    //             services: body.services,
+    //             description: body.description,
+    //             profileImages: profileImages, // Array of objects
+    //             certificate: uploadUrls.certificate
+    //                 ? formatImage(uploadUrls.certificate)
+    //                 : null,
+    //         });
+
+    //         const result = await mechanicData.save();
+    //         if (result) {
+    //             await Mechanic.findOneAndUpdate(
+    //                 { _id: mechanicID },
+    //                 {
+    //                     isCompleted: true,
+    //                     mechanicdataID: result._id,
+    //                 },
+    //                 { new: true }
+    //             );
+
+    //         }
+
+
+    //         return mechanicData;
+    //     } catch (error) {
+    //         console.error('Error in registerData:', error);
+    //         throw new Error('Failed to register mechanic data');
+    //     }
+    // }
     async registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
         try {
-            console.log("Processing data...");
-
-            const formatImage = (url: string): { url: string; contentType: string } => ({
-                url,
-                contentType: 'image/jpeg',
-            });
-
-            const profileImages = [
-                uploadUrls.profileImage0,
-                uploadUrls.profileImage1,
-                uploadUrls.profileImage2,
-                uploadUrls.profileImage3,
-            ]
-                .filter(Boolean)
-                .map(formatImage);
-            const mechanicID = Types.ObjectId.createFromHexString(body.ID)
-            const mechanicData = new MechanicData({
-                mechanicID: mechanicID,
-                type: body.type,
-                licenseNumber: body.licenseNumber,
-                yearsOfExperience: body.yearsOfExperience,
-                specialization: body.specialization,
-                location: body.location,
-                locationName: body.locationName,
-                services: body.services,
-                description: body.description,
-                profileImages: profileImages, // Array of objects
-                certificate: uploadUrls.certificate
-                    ? formatImage(uploadUrls.certificate)
-                    : null,
-            });
-
-            const result = await mechanicData.save();
-            if (result) {
-                await Mechanic.findOneAndUpdate(
-                    { _id: mechanicID },
-                    {
-                        isCompleted: true,
-                        mechanicdataID: result._id,
-                    },
-                    { new: true }
-                );
-
-            }
-
-
-            return mechanicData;
+          console.log("Processing data...");
+    
+          const formatImage = (url: string): { url: string; contentType: string } => ({
+            url,
+            contentType: 'image/jpeg',
+          });
+    
+          const profileImages = [
+            uploadUrls.profileImage0,
+            uploadUrls.profileImage1,
+            uploadUrls.profileImage2,
+            uploadUrls.profileImage3,
+          ]
+            .filter(Boolean)
+            .map(formatImage);
+    
+          const mechanicID = Types.ObjectId.createFromHexString(body.ID);
+    
+          const mechanicData = new MechanicData({
+            mechanicID: mechanicID,
+            type: body.type,
+            licenseNumber: body.licenseNumber,
+            yearsOfExperience: body.yearsOfExperience,
+            specialization: body.specialization,
+            district: body.district,
+            location: {
+              type: "Point",
+              coordinates: [parseFloat(body.longitude), parseFloat(body.latitude)]
+            },
+            locationName: body.locationName,
+            services: body.services,
+            description: body.description,
+            profileImages: profileImages,
+            certificate: uploadUrls.certificate
+              ? formatImage(uploadUrls.certificate)
+              : null,
+          });
+    
+          const result = await mechanicData.save();
+          if (result) {
+            await Mechanic.findOneAndUpdate(
+              { _id: mechanicID },
+              {
+                isCompleted: true,
+                mechanicdataID: result._id,
+              },
+              { new: true }
+            );
+          }
+    
+          return mechanicData;
         } catch (error) {
-            console.error('Error in registerData:', error);
-            throw new Error('Failed to register mechanic data');
+          console.error('Error in registerData:', error);
+          throw new Error('Failed to register mechanic data');
         }
     }
-
-
     async getmechData(id: string): Promise<any> {
         try {
             const objectId = new mongoose.Types.ObjectId(id);

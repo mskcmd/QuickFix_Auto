@@ -67,8 +67,8 @@ class mechanicServices {
             console.log("re",result);
             
             if (result?.status == true) {
-                const token = this.createjwt.generateToken(result.mechanic?.id);
-                const refreshToken = this.createjwt.generateRefreshToken(result.mechanic?.id)
+                const mech_token = this.createjwt.generateToken(result.mechanic?.id);
+                const mech_refreshToken = this.createjwt.generateRefreshToken(result.mechanic?.id)
                 return {
                     data: {
                         data: {
@@ -76,8 +76,8 @@ class mechanicServices {
                             message: 'Authentication Successful !',
                             data: result.mechanic,
                             mechnicId: result.mechanic?._id,
-                            token: token,
-                            refreshToken: refreshToken
+                            mech_token: mech_token,
+                            mech_refreshToken: mech_refreshToken
                         }
                     }
                 }
@@ -145,8 +145,7 @@ class mechanicServices {
     
     async registerMechData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
         try {
-          console.log(uploadUrls, body);
-    
+          console.log("hs",uploadUrls, body);
           const result = await this.mechanicRepo.registerData(uploadUrls, body);
           return result;
         } catch (error) {

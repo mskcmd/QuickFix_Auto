@@ -31,7 +31,7 @@ const Navigation: React.FC = () => {
           </div>
           <ul className={`md:flex md:justify-between md:items-center ${isMenuOpen ? 'block' : 'hidden'}`}>
             <li className="relative group">
-              <Link to="/mechanic/dashboard" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
+              <Link to="/mechanic/home" className="block px-4 py-3 transition duration-300 ease-in-out text-blue-100 hover:text-white">
                 Dashboard
                 <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 ease-in-out scale-x-0 group-hover:scale-x-100"></span>
               </Link>

@@ -101,7 +101,9 @@ export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicI
         formData.append('licenseNumber', mechanicData.licenseNumber);
         formData.append('yearsOfExperience', mechanicData.yearsOfExperience);
         formData.append('specialization', mechanicData.specialization);
-        formData.append('location', mechanicData.location);
+        formData.append('latitude', mechanicData.latitude);
+        formData.append('longitude', mechanicData.longitude);
+        formData.append('district', mechanicData.district);
         formData.append('locationName', mechanicData.locationName);
         formData.append('description', mechanicData.description);
         // Append files
@@ -151,4 +153,13 @@ export const getmechData = async (mechanicId: string): Promise<MechanicDataItem[
       throw error;
     }
   };
+
+  export const logout = async () => {
+    try {
+        return await Api.get(mechanicRoute.mechLogout)
+    } catch (error) {
+        console.log(error);
+
+    }
+}
 

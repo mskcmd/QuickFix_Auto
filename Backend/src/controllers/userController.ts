@@ -47,7 +47,7 @@ class UserController {
 
       // Check if OTP is expired
       if (!otpExpirationTime || currentTime > otpExpirationTime) {
-        res.json({ message: "OTP has expired" ,Isexpired:true});
+        res.json({ message: "OTP has expired", Isexpired: true });
         return
       }
 
@@ -74,21 +74,21 @@ class UserController {
     try {
       const { email, password } = req.body;
       console.log(email, password);
-  
+
       const result = await this.userService.login(email, password);
       console.log("yy", result?.result?.isVerified);
-  
+
       if (result?.result?.isVerified === false) {
         res.json({ isverified: false, message: 'User not verified', result });
         return;
       }
-  
+
       if (result?.data?.data?.succuss === true) {
         const access_token = result.data.data.token;
         const refresh_token = result.data.data.refreshToken;
         const accessTokenMaxAge = 5 * 60 * 1000; // 5 minutes
         const refreshTokenMaxAge = 48 * 60 * 60 * 1000; // 48 hours
-  
+
         res.status(200)
           .cookie('access_token', access_token, {
             maxAge: accessTokenMaxAge,
@@ -111,14 +111,14 @@ class UserController {
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
-  
-  
+
+
   async resendOtp(req: Request, res: Response): Promise<void> {
     try {
       const email = req.session.email;
       const name = req.session.name;
-      console.log(email,name);
-      
+      console.log(email, name);
+
       if (!email || !name) {
         res.status(400).json({ error: 'Email or name is missing' });
         return;
@@ -128,7 +128,7 @@ class UserController {
       const otpExpirationTime = currentTime + 30 * 1000;
       req.session.otpTime = otpExpirationTime;
       req.session.otp = otp;
-      res.status(200).json({ message: 'OTP sent successfully',isOtp:true });
+      res.status(200).json({ message: 'OTP sent successfully', isOtp: true });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Failed to send OTP' });
@@ -139,7 +139,7 @@ class UserController {
     try {
       const email = req.query.email as string;
       console.log(email);
-      
+
       if (!email) {
         res.status(400).json({ error: 'Email is required' });
         return;
@@ -175,7 +175,7 @@ class UserController {
       console.log('Received userId:', userId);
 
       const result = await this.userService.resetPassword(newPassword, userId)
-      res.json({result})
+      res.json({ result })
     } catch (error) {
       console.error('Error resetting password:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -186,7 +186,7 @@ class UserController {
     try {
 
       const { otp, userId } = req.query;
-      console.log("gf",req.query);
+      console.log("gf", req.query);
 
       if (typeof otp !== 'string' || typeof userId !== 'string') {
         res.status(400).json({ error: 'Invalid request parameters' });
@@ -216,7 +216,44 @@ class UserController {
     }
   }
 
+  async userLogout(req: Request, res: Response): Promise<void> {
+    try {
+      res.cookie('access_token', '', {
+        maxAge: 0
+      }).cookie('refresh_token', '', {
+        maxAge: 0
+      })
+      res.status(200).json({ success: true, message: 'user logout - clearing cookie' })
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
+  
+  async searchMechanic(req: Request, res: Response): Promise<void> {
+    try {
+      const { latitude, longitude, type } = req.query;
+
+      if (!latitude || !longitude || !type) {
+        res.status(400).send('Missing parameters');
+        return;
+      }
+
+      // Convert query parameters to numbers
+      const userLat = parseFloat(latitude as string);
+      const userLon = parseFloat(longitude as string);
+      console.log(userLat,userLat);
+      
+
+      // Use the service to get mechanics
+      const result = await this.userService.searchMechanics(userLat, userLon, type as string);
+
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Server error');
+    }
+  }
 }
 
 export default UserController

@@ -35,6 +35,8 @@ authRoute.get("/resendotp",userController.resendOtp.bind(userController))
 authRoute.get("/forgetPassword",userController.forgetPassword.bind(userController))
 authRoute.get("/veryfyotpreset",userController.veryfyOtpreset.bind(userController))
 authRoute.post("/resetPassword",userController.resetPassword.bind(userController))
+authRoute.get("/userLogout",userController.userLogout.bind(userController))
+authRoute.get("/serchMech",userController.searchMechanic.bind(userController))
 
 
 authRoute.post("/mechanic/signup",mechanicController.mechanicSignup.bind(mechanicController))
@@ -44,11 +46,11 @@ authRoute.post("/mechanic/resendotp",mechanicController.resendOtp.bind(mechanicC
 authRoute.get("/mechanic/forgetPassword",mechanicController.forgetPassword.bind(mechanicController))
 authRoute.get("/mechanic/veryfyotpreset",mechanicController.veryfyOtpreset.bind(mechanicController))
 authRoute.post("/mechanic/resetPassword",mechanicController.resetPassword.bind(mechanicController))
-
+authRoute.get("/mechanic/mechLogout",mechanicController.mechLogout.bind(mechanicController))
 
 
 authRoute.post("/admin/login",adminController.Login.bind(adminController))
-
+authRoute.get("/admin/adminLogout",adminController.adminLogout.bind(adminController))
 
 
 export default authRoute

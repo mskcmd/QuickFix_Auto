@@ -4,16 +4,18 @@ import { UseLog, UserDoc } from "../interfaces/IUser";
 import bcrypt from 'bcrypt';
 import Admin from "../models/adminModel";
 import mongoose from 'mongoose';
+import MechanicData from "../models/mechanicdataModel";
 
 
 class UserRepository {
+  [x: string]: any;
 
   async findUserByEmail(email: string): Promise<UserDoc | null> {
     try {
-      console.log("hh",email);
-      
+      console.log("hh", email);
+
       const userData: UserDoc | null = await User.findOne({ email }).exec();
-      console.log("ff",userData);
+      console.log("ff", userData);
       return userData;
     } catch (error) {
       console.error("Error in findUserByEmail:", error);
@@ -23,13 +25,13 @@ class UserRepository {
 
   async findUserById(userId: string): Promise<UserDoc | null> {
     try {
-        const userData: UserDoc | null = await User.findOne({ _id: userId }).exec();
-        return userData;
+      const userData: UserDoc | null = await User.findOne({ _id: userId }).exec();
+      return userData;
     } catch (error) {
-        console.error("Error in findUserById:", error);
-        throw error;
+      console.error("Error in findUserById:", error);
+      throw error;
     }
-}
+  }
 
 
   async createUser(name: string, email: string, phone: string, password: string): Promise<UserDoc | undefined> {
@@ -48,62 +50,113 @@ class UserRepository {
       // Find the user and exclude the password field for the user object returned
       const user = await User.findOne({ email }).select('-password');
       console.log("user", user);
-  
+
       if (!user) {
         return { status: false, message: "User not found." };
       }
       if (!user.isVerified) {
         return { isVerified: false, message: "User not verified." };
       }
-  
+
       // Find the user with the password field included for comparison
       const userWithPassword = await User.findOne({ email }).select('+password');
       if (!userWithPassword) {
         return { status: false, message: "User not found for password validation." };
       }
-  
+
       const isPasswordValid = await bcrypt.compare(password, userWithPassword.password);
       if (!isPasswordValid) {
         return { status: false, message: "Invalid password." };
       }
-  
+
       return { status: true, user };
     } catch (error) {
       console.error(error);
       return { status: false, message: "An error occurred during login." };
     }
   }
-  
-  
-  async resetPassword(password: string,userId: string ) {
+
+
+  async resetPassword(password: string, userId: string) {
     try {
-      
-        if (!userId || !password) {
-            throw new Error('User ID and password are required');
-        }
-        // Validate ObjectId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            throw new Error('Invalid user ID');
-        }
-        const objectId = new mongoose.Types.ObjectId(userId);
-        const userData: UserDoc | null = await User.findById(objectId).exec();
 
-        if (!userData) {
-            throw new Error('User not found');
-        }
-        const hashpass: string = await bcrypt.hash(password, 10);
-        userData.password = hashpass; // Assuming userData has a password field
-        const result = await userData.save();
-        console.log('Password reset successful for user:', userId);
-        return result
+      if (!userId || !password) {
+        throw new Error('User ID and password are required');
+      }
+      // Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error('Invalid user ID');
+      }
+      const objectId = new mongoose.Types.ObjectId(userId);
+      const userData: UserDoc | null = await User.findById(objectId).exec();
+
+      if (!userData) {
+        throw new Error('User not found');
+      }
+      const hashpass: string = await bcrypt.hash(password, 10);
+      userData.password = hashpass; // Assuming userData has a password field
+      const result = await userData.save();
+      console.log('Password reset successful for user:', userId);
+      return result
     } catch (error) {
-        console.error('Error in UserService.resetPassword:', error);
-        throw error;
+      console.error('Error in UserService.resetPassword:', error);
+      throw error;
     }
-}
+  }
 
+  async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
+    try {
+      const mechanics = await MechanicData.aggregate([
+        {
+          $geoNear: {
+            near: { type: 'Point', coordinates: [lon, lat] },
+            distanceField: 'distance',
+            maxDistance: maxDistance,
+            spherical: true,
+            query: { type: type }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            mechanicID: 1,
+            type: 1,
+            licenseNumber: 1,
+            yearsOfExperience: 1,
+            specialization: 1,
+            district: 1,
+            location: 1,
+            locationName: 1,
+            services: 1,
+            description: 1,
+            profileImages: 1,
+            certificate: 1,
+            distance: 1,
+            distanceKm: { $divide: ['$distance', 1000] },
+            walkingTime: { $divide: ['$distance', 5000 / 60] }, // 5 km/h
+            bikingTime: { $divide: ['$distance', 15000 / 60] }, // 15 km/h
+            drivingTime: { $divide: ['$distance', 40000 / 60] } // 40 km/h
+          }
+        }
+      ]);
+  
+      const formattedMechanics = mechanics.map(mechanic => ({
+        ...mechanic,
+        distanceKm: Number(mechanic.distanceKm.toFixed(2)),
+        walkingTime: Number(mechanic.walkingTime.toFixed(2)),
+        bikingTime: Number(mechanic.bikingTime.toFixed(2)),
+        drivingTime: Number(mechanic.drivingTime.toFixed(2))
+      }));
+      console.log(`Found ${formattedMechanics.length} mechanics within ${maxDistance / 1000} km radius`);
+      console.log(formattedMechanics);
+      
+      return formattedMechanics;
+    } catch (error) {
+      console.error("Error finding mechanics:", error);
+      throw error;
+    }
+  }
 
- 
 }
 
 export default UserRepository;

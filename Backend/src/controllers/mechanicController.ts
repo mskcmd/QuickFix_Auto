@@ -74,25 +74,22 @@ class mechanicController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body
-      console.log("mechani", email, password);
       const result = await this.mechanicServices.login(email, password)
-      console.log("kk", result);
       if (result?.result?.isVerified === false) {
         res.json({ isverified: false, message: 'Mechnic not verified', result });
         return;
       }
       if (result?.data?.data?.succuss === true) {
-        console.log("yy", result)
         const time = this.milliseconds(23, 30, 0);
-        const access_token = result.data.data.token;
-        const refresh_token = result.data.data.refreshToken;
+        const mech_access_token = result.data.data.mech_token;
+        const mech_refresh_token = result.data.data.mech_refreshToken;
         const accessTokenMaxAge = 5 * 60 * 1000;
         const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
-        res.status(200).cookie('access_token', access_token, {
+        res.status(200).cookie('mech_access_token', mech_access_token, {
           maxAge: accessTokenMaxAge,
           sameSite: 'none',
           secure: true
-        }).cookie("refresh_token", refresh_token, {
+        }).cookie("mech_refresh_token", mech_refresh_token, {
           maxAge: refreshTokenMaxAge,
           sameSite: "none",
           secure: true
@@ -193,70 +190,82 @@ class mechanicController {
 
   async mech_register(req: Request, res: Response) {
     try {
-    console.log('Form Data:', req.body.ID);
-    console.log('Uploaded Files:', req.files);
-    const files = req.files as UploadedFile;
-    const uploadPromises = Object.keys(files).map(async (key) => {
-      const file = files[key][0];
-      const fileUrl = await uploadFile(file);
-      return {
-        [key]: fileUrl 
-      };
-    });
-    const uploadResults = await Promise.all(uploadPromises);
-    const uploadUrls = uploadResults.reduce((acc, obj) => ({ ...acc, ...obj }), {});
-    console.log(uploadUrls);
-    const result = await this.mechanicServices.registerMechData(uploadUrls, req.body);
-    console.log(result,"successfully updted");
-    res.status(201).json({
-      result,
-      status: true,
-      message: 'Successfully created'
-    });
-    return
-      } catch (error) {
-    console.error('Error in mechanic register:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      console.log('Form Data:', req.body.ID);
+      console.log('Uploaded Files:', req.files);
+      const files = req.files as UploadedFile;
+      const uploadPromises = Object.keys(files).map(async (key) => {
+        const file = files[key][0];
+        const fileUrl = await uploadFile(file);
+        return {
+          [key]: fileUrl
+        };
+      });
+      const uploadResults = await Promise.all(uploadPromises);
+      const uploadUrls = uploadResults.reduce((acc, obj) => ({ ...acc, ...obj }), {});
+      console.log(uploadUrls);
+      const result = await this.mechanicServices.registerMechData(uploadUrls, req.body);
+      console.log(result, "successfully updted");
+      res.status(201).json({
+        result,
+        status: true,
+        message: 'Successfully created'
+      });
+      return
+    } catch (error) {
+      console.error('Error in mechanic register:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
-}
 
-async getMechData(req: Request, res: Response): Promise<void> {
-  try {
-    const id = req.query.Id as string;
-    if (!id) {
-      res.status(400).json({ error: 'Missing mechanic ID' });
-      return;
+  async getMechData(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.query.Id as string;
+      if (!id) {
+        res.status(400).json({ error: 'Missing mechanic ID' });
+        return;
+      }
+      const mechanicData = await this.mechanicServices.getMechData(id);
+      if (!mechanicData) {
+        res.status(404).json({ error: 'Mechanic not found' });
+        return;
+      }
+      res.json(mechanicData);
+    } catch (error) {
+      console.error("Error fetching mechanic data:", error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-    const mechanicData = await this.mechanicServices.getMechData(id);
-    if (!mechanicData) {
-      res.status(404).json({ error: 'Mechanic not found' });
-      return;
-    }
-    res.json(mechanicData);
-  } catch (error) {
-    console.error("Error fetching mechanic data:", error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-}
 
-async getDetailData(req: Request, res: Response): Promise<void> {
-  try {
-    const id = req.query.Id as string;
-    if (!id) {
-      res.status(400).json({ error: 'Missing mechanic ID' });
-      return;
+  async getDetailData(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.query.Id as string;
+      if (!id) {
+        res.status(400).json({ error: 'Missing mechanic ID' });
+        return;
+      }
+      const mechanicData = await this.mechanicServices.getDetailData(id);
+      if (!mechanicData) {
+        res.status(404).json({ error: 'Mechanic not found' });
+        return;
+      }
+      res.json(mechanicData);
+    } catch (error) {
+      console.error("Error fetching mechanic data:", error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-    const mechanicData = await this.mechanicServices.getDetailData(id);
-    if (!mechanicData) {
-      res.status(404).json({ error: 'Mechanic not found' });
-      return;
-    }    
-    res.json(mechanicData);
-  } catch (error) {
-    console.error("Error fetching mechanic data:", error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-}
+  async mechLogout(req: Request, res: Response): Promise<void> {
+    try {
+      res.cookie('admin_access_token', '', {
+        maxAge: 0
+      }).cookie('admin_refresh_token', '', {
+        maxAge: 0
+      })
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
 
 
 }

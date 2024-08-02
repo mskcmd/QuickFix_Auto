@@ -7,6 +7,8 @@ const userRoutes={
     forgetPassword:"/auth/forgetPassword",
     veryfyOtpreset:"/auth/veryfyotpreset",
     resetPassword:"/auth/resetPassword",
+    userLogout:"/auth/userLogout",
+    searchMech:"/auth/serchMech"
 
 }
 

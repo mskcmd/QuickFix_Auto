@@ -136,6 +136,10 @@ class UserServices {
             throw error;
         }
     }
+    async searchMechanics(lat: number, lon: number, type: string) {
+        const mechanics = await this.userRepo.findMechanicsNearLocation(lat, lon, type);
+        return mechanics
+      }
 }
 
 export default UserServices;

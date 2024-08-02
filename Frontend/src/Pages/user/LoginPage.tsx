@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
           if (data?.data.IsData == false) {
             return toast.error(data?.data.message);
           }
-          console.log("odata",data?.data.data);
+          console.log("odata", data?.data.data);
           dispatch(setUserCredential(data?.data.data));
           navigate("/home");
           toast.success("Login succussfilly");
@@ -45,15 +45,20 @@ const LoginPage: React.FC = () => {
     },
   });
   return (
-    <div className="flex justify-center items-center h-screen p-4 bg-gradient-to-r from-gray-800 to-gray-700">
+    <div className="flex justify-center items-center h-screen p-4 bg-gradient-to-r bg-white">
+      {/* <img
+        src="https://images.stockcake.com/public/9/8/a/98a197a4-ac0d-4d43-b054-9f4eb7814e9b_large/automotive-assembly-line-stockcake.jpg"
+        alt="Cover"
+        className="absolute inset-0 h-full w-full object-cover rounded-l-lg"
+      /> */}
       <div className="h-[85vh] w-[70vh] col-span-6 hidden md:block relative">
         <img
-          src="https://img.freepik.com/free-vector/car-service-logo-design_23-2149750690.jpg?t=st=1717655993~exp=1717659593~hmac=2ef181f4aa878c2cc79d4580f692417493b1c54ec45f3bf30737939e5431b020&w=740"
+          src="https://images.stockcake.com/public/6/9/0/690cf20f-1cfe-467c-b19f-e5f4b2d3e225_large/worker-welding-metal-stockcake.jpg"
           alt="Cover"
           className="absolute inset-0 h-full w-full object-cover rounded-l-lg"
         />
       </div>
-      <div className="flex flex-col justify-center h-[85vh] w-[70vh] bg-white p-8 rounded-r-lg">
+      <div className="flex flex-col justify-center h-[85vh] w-[70vh] bg-white p-8 shadow-2xl rounded-r-lg z-10">
         <h2 className="text-4xl font-bold mb-8 text-center text-gray-800">
           Login
         </h2>

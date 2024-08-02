@@ -56,6 +56,10 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
       const result = await verifyOtp(otp);
       console.log("Resultq:", result);
       console.log("pppp:", result?.data.Isexpired);
+      console.log("sdfds", result?.data.message);
+      if (result?.data.message === "OTP is wrong") {
+        toast.error(result?.data.message);
+      }
       if (result?.data.Isexpired == true) {
         toast.error(result?.data.message);
       }
@@ -68,26 +72,26 @@ const OTPComponent: React.FC<OTPComponentProps> = () => {
     } catch (error) {
       console.log(error as Error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
   const resendOTP = async () => {
-    if (isLoading) return; 
+    if (isLoading) return;
 
-    setIsLoading(true); 
+    setIsLoading(true);
 
     try {
       const result = await resendOtp();
-      setSeconds(30); 
+      setSeconds(30);
       setIsOtpExpired(false);
-      if(result?.data.isOtp==true){
-      toast.success(result?.data.message)
+      if (result?.data.isOtp == true) {
+        toast.success(result?.data.message);
       }
     } catch (error) {
       console.log(error as Error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 

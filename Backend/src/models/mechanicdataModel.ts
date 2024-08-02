@@ -1,9 +1,11 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
-import { IMechanicData } from "../interfaces/IMechanic"; // Correct import
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
+import { IMechanicData } from "../interfaces/IMechanic";
+import Mechanic from "./mechanicModel"; // Assuming this is the correct import
 
 const MechanicDataSchema: Schema = new Schema({
   mechanicID: { 
     type: Schema.Types.ObjectId,
+    required: true,
   },
   type: {
     type: String,
@@ -21,9 +23,20 @@ const MechanicDataSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  location: {
+  district: {
     type: String,
     required: true,
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
   },
   locationName: {
     type: String,
@@ -39,12 +52,14 @@ const MechanicDataSchema: Schema = new Schema({
   profileImages: [{
     url: { type: String },
     contentType: { type: String },
-  }], // Changed to store objects
+  }],
   certificate: {
     url: { type: String },
     contentType: { type: String },
-  }, // Changed to store objects
+  },
 }, { timestamps: true });
+
+MechanicDataSchema.index({ location: '2dsphere' });
 
 const MechanicData: Model<IMechanicData> = mongoose.model<IMechanicData>("MechanicData", MechanicDataSchema);
 

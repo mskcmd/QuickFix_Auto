@@ -10,7 +10,7 @@ console.log("hjgsd",adminData);
   if (!adminData) {
     return <Outlet />;
   } else {
-    return <Navigate to="/admin/dashbord" />;
+    return <Navigate to="/admin/dashboard/dashboard" />;
   }
 };
 

@@ -32,3 +32,12 @@ export const getMechData = async () => {
 
     }
 }
+
+export const logout = async () => {
+    try {
+        return await Api.get(adminRoute.adminLogout)
+    } catch (error) {
+        console.log(error);
+
+    }
+}

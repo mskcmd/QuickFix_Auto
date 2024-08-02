@@ -17,7 +17,9 @@ export interface MechanicFormData {
   licenseNumber: string;
   yearsOfExperience: string;
   specialization: string;
-  location: string;
+  latitude: string,
+  longitude: string,
+  district: string,
   locationName: string;
   services: string[];
   description: string;
@@ -31,7 +33,9 @@ const MechanicRegisterForm: React.FC = () => {
     licenseNumber: "",
     yearsOfExperience: "",
     specialization: "",
-    location: "",
+    latitude: "",
+    longitude: "",
+    district: "",
     locationName: "",
     services: [] as string[],
     description: "",
@@ -118,7 +122,7 @@ const MechanicRegisterForm: React.FC = () => {
     if (!formData.specialization)
       newErrors.specialization = "Specialization is required";
 
-    if (!formData.location) newErrors.location = "Location is required";
+    if (!formData.locationName) newErrors.location = "Location is required";
 
     if (formData.services.length === 0 || formData.services.length < 10)
       newErrors.services = "At least 10 services are required";
@@ -154,11 +158,10 @@ const MechanicRegisterForm: React.FC = () => {
       try {
         const result = await mechanicRegister(formData, mechanicId);
         if (result.data) {
-          console.log("msk",result.data);
-          
+          console.log("msk", result.data);
+
           toast.success("Successfully toasted!");
           navigate("/mechanic/home");
-
         } else {
           toast.error("This didn't work.");
         }
@@ -180,29 +183,35 @@ const MechanicRegisterForm: React.FC = () => {
 
   const handleLocationSelect = async (lat: number, lng: number) => {
     setSelectedLocation([lat, lng]);
-    const coordinates = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-
+  
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
       );
       const data = await response.json();
       const locationName = data.display_name || "Unknown location";
-
+      const district = data.address?.county || data.address?.city || "Unknown district";
+  
       setFormData((prevData) => ({
         ...prevData,
-        location: coordinates,
+        latitude: lat.toString(),
+        longitude: lng.toString(),
+        location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
         locationName: locationName,
+        district: district,
       }));
     } catch (error) {
       console.error("Error fetching location name:", error);
       setFormData((prevData) => ({
         ...prevData,
-        location: coordinates,
+        latitude: lat.toString(),
+        longitude: lng.toString(),
+        location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
         locationName: "Unknown location",
+        district: "Unknown district",
       }));
     }
-
+  
     closeMapModal();
   };
 

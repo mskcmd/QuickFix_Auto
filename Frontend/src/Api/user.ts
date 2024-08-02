@@ -1,7 +1,9 @@
 
+import { AxiosResponse } from "axios";
 import { FromData } from "../Pages/user/SignupPage"
 import userRoutes from "../Services/Endpoints/userEndPoints";
 import Api from "../Services/axios";
+import { FormData } from "../Components/User/BookingForm";
 
 export const signup = async ({ name, email, phone, password }: FromData) => {
     try {
@@ -35,7 +37,7 @@ export const verifyOtp = async (otpnum: string) => {
 export const Login = async (email: string, password: string) => {
     try {
         console.log("hai sir");
-        
+
         const result = await Api.post(userRoutes.Login, { email, password })
         console.log("eeee", result);
         return result
@@ -47,9 +49,9 @@ export const Login = async (email: string, password: string) => {
 
 export const resendOtp = async () => {
     try {
-       const result = await Api.get(userRoutes.resendOtp);
-       console.log("resendOtp",result);
-       return result
+        const result = await Api.get(userRoutes.resendOtp);
+        console.log("resendOtp", result);
+        return result
     } catch (error) {
         console.log(error as Error);
     }
@@ -57,7 +59,7 @@ export const resendOtp = async () => {
 
 export const forgetPassword = async (email: string) => {
     try {
-        console.log("email",email);
+        console.log("email", email);
         const result = await Api.get(userRoutes.forgetPassword, { params: { email } });
         console.log(result);
         return result
@@ -68,9 +70,9 @@ export const forgetPassword = async (email: string) => {
 export const resetPassword = async (password: string, userId: string) => {
     try {
         console.log("rgtre", password, userId);
-        
-        const result = await Api.post(userRoutes.resetPassword,{password,userId})
-        console.log("",result);
+
+        const result = await Api.post(userRoutes.resetPassword, { password, userId })
+        console.log("", result);
         return result
     } catch (error) {
         console.log(error);
@@ -81,10 +83,10 @@ export const resetPassword = async (password: string, userId: string) => {
 
 export const verifyOtpReset = async (otpnum: string, userId: string) => {
     try {
-        console.log("k",otpnum,userId);
-        
+        console.log("k", otpnum, userId);
+
         const otp = parseInt(otpnum);
-        const result = await Api.get(userRoutes.veryfyOtpreset,{params: {otp,userId} } );
+        const result = await Api.get(userRoutes.veryfyOtpreset, { params: { otp, userId } });
         console.log("otp", result);
         if (result) {
             return result;
@@ -93,3 +95,27 @@ export const verifyOtpReset = async (otpnum: string, userId: string) => {
         console.log(error);
     }
 }
+
+export const logout = async () => {
+    try {
+        return await Api.get(userRoutes.userLogout)
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+export const searchMechShop = async (formData: FormData): Promise<FormData | null> => {
+    try {
+        console.log("Form data is validf", formData);
+      const response: AxiosResponse<FormData> = await Api.get(userRoutes.searchMech, {
+        params: formData
+      });
+      console.log(response);
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error searching for mechanic shops:', error);
+      return null;
+    }
+  };
