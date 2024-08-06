@@ -25,7 +25,6 @@ const MechanicDataSchema: Schema = new Schema({
   },
   district: {
     type: String,
-    required: true,
   },
   location: {
     type: {

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ReactNode } from "react";
+import { MechanicProfile } from "../../Components/Common/Interface";
 
 // export interface UserData {
 //     _id: string;
@@ -49,10 +50,13 @@ interface AdminData {
   password: string;
 }
 
+
 interface AuthState {
   userData: UserData | null;
   mechanicData: MechanicResponse | null;
   adminData: AdminData | null;
+  userSerchData: MechanicProfile | null;
+
 }
 
 const initialState: AuthState = {
@@ -64,6 +68,9 @@ const initialState: AuthState = {
     : null,
   adminData: localStorage.getItem("adminInfo")
     ? JSON.parse(localStorage.getItem("adminInfo") as string)
+    : null,
+  userSerchData: localStorage.getItem("userSercInfo")
+    ? JSON.parse(localStorage.getItem("userSercInfo") as string)
     : null,
 };
 
@@ -83,6 +90,10 @@ export const authSlice = createSlice({
       state.adminData = action.payload;
       localStorage.setItem("adminInfo", JSON.stringify(action.payload));
     },
+    setUserSerchCredential: (state, action: PayloadAction<MechanicProfile>) => {
+      state.userSerchData = action.payload;
+      localStorage.setItem("userSercInfo", JSON.stringify(action.payload));
+    },
     clearUserCredential: (state) => {
       state.userData = null;
       localStorage.removeItem("userInfo");
@@ -99,6 +110,7 @@ export const authSlice = createSlice({
       state.adminData = null;
       localStorage.removeItem("adminInfo");
     },
+
   },
 });
 
@@ -110,6 +122,7 @@ export const {
   userLogout,
   mechLogout,
   adminLogout,
+  setUserSerchCredential
 } = authSlice.actions;
 
 export default authSlice.reducer;

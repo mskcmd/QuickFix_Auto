@@ -104,8 +104,63 @@ class UserRepository {
     }
   }
 
+  // async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
+  //   try {
+  //     const mechanics = await MechanicData.aggregate([
+  //       {
+  //         $geoNear: {
+  //           near: { type: 'Point', coordinates: [lon, lat] },
+  //           distanceField: 'distance',
+  //           maxDistance: maxDistance,
+  //           spherical: true,
+  //           query: { type: type }
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           _id: 1,
+  //           mechanicID: 1,
+  //           type: 1,
+  //           licenseNumber: 1,
+  //           yearsOfExperience: 1,
+  //           specialization: 1,
+  //           district: 1,
+  //           location: 1,
+  //           locationName: 1,
+  //           services: 1,
+  //           description: 1,
+  //           profileImages: 1,
+  //           certificate: 1,
+  //           distance: 1,
+  //           distanceKm: { $divide: ['$distance', 1000] },
+  //           walkingTime: { $divide: ['$distance', 5000 / 60] }, // 5 km/h
+  //           bikingTime: { $divide: ['$distance', 15000 / 60] }, // 15 km/h
+  //           drivingTime: { $divide: ['$distance', 40000 / 60] } // 40 km/h
+  //         }
+  //       }
+  //     ]);
+
+  //     const formattedMechanics = mechanics.map(mechanic => ({
+  //       ...mechanic,
+  //       distanceKm: Number(mechanic.distanceKm.toFixed(2)),
+  //       walkingTime: Number(mechanic.walkingTime.toFixed(2)),
+  //       bikingTime: Number(mechanic.bikingTime.toFixed(2)),
+  //       drivingTime: Number(mechanic.drivingTime.toFixed(2))
+  //     }));
+  //     console.log(`Found ${formattedMechanics.length} mechanics within ${maxDistance / 1000} km radius`);
+  //     console.log(formattedMechanics);
+
+  //     return formattedMechanics;
+  //   } catch (error) {
+  //     console.error("Error finding mechanics:", error);
+  //     throw error;
+  //   }
+  // }
   async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
     try {
+      // Define the query object for $geoNear stage
+      const query = type === 'all' ? {} : { type: type };
+
       const mechanics = await MechanicData.aggregate([
         {
           $geoNear: {
@@ -113,7 +168,7 @@ class UserRepository {
             distanceField: 'distance',
             maxDistance: maxDistance,
             spherical: true,
-            query: { type: type }
+            query: query
           }
         },
         {
@@ -139,7 +194,7 @@ class UserRepository {
           }
         }
       ]);
-  
+
       const formattedMechanics = mechanics.map(mechanic => ({
         ...mechanic,
         distanceKm: Number(mechanic.distanceKm.toFixed(2)),
@@ -147,9 +202,10 @@ class UserRepository {
         bikingTime: Number(mechanic.bikingTime.toFixed(2)),
         drivingTime: Number(mechanic.drivingTime.toFixed(2))
       }));
+
       console.log(`Found ${formattedMechanics.length} mechanics within ${maxDistance / 1000} km radius`);
       console.log(formattedMechanics);
-      
+
       return formattedMechanics;
     } catch (error) {
       console.error("Error finding mechanics:", error);

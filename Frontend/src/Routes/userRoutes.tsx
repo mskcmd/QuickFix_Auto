@@ -8,20 +8,24 @@ import ForgertPasswort from "../Pages/user/ForgertPasswort.tsx";
 import RestOtp from "../Pages/user/RestOtp.tsx";
 import OTPComponent from "../Pages/user/OtpPassReset.tsx";
 import Erorr404 from "../Components/Common/ErorrPage/Erorr404.tsx";
+import MechnichData from "../Pages/user/MechnichData.tsx";
+import MechanicDetails from "../Pages/user/MechanicDetails.tsx";
 
 function userRoutes() {
   return (
     <Routes>
-    <Route path="/home" element={<Home />} />
+      <Route path="mechanicData" element={<MechnichData />} />
+      <Route path="mechanicData/:id" element={<MechanicDetails />} />
+      <Route path="/home" element={<Home />} />
       <Route element={<UserLoggedOut />}>
         <Route path="login" element={<LoginPage />} />
         <Route path="otp-page" element={<Otppage />} />
         <Route path="forget/otp-page/:userId" element={<OTPComponent />} />
         <Route path="signup" element={<SignupPage />} />
-        <Route path="forgetPassword" element={<ForgertPasswort/>}/>
-        <Route path="/reset/:userid" element={<RestOtp/>}/>
+        <Route path="forgetPassword" element={<ForgertPasswort />} />
+        <Route path="/reset/:userid" element={<RestOtp />} />
       </Route>
-      <Route path="*" element={<Erorr404/>}></Route>
+      <Route path="*" element={<Erorr404 />}></Route>
     </Routes>
   );
 }
