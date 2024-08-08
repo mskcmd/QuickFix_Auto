@@ -84,12 +84,12 @@ The **Car Services Project** is a web application built using the MERN stack (Mo
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/car-services-project.git
+   ghttps://github.com/mskcmd/QuickFix_Auto.git
    ```
 
 2. **Navigate to the Project Directory**
    ```bash
-   cd car-services-project
+   cd QuickFix_Auto
    ```
 
 3. **Install Dependencies**
@@ -99,7 +99,7 @@ The **Car Services Project** is a web application built using the MERN stack (Mo
 
 4. **Start the Development Server**
    ```bash
-   npm start
+   npm run dev
    ```
 
 ---
