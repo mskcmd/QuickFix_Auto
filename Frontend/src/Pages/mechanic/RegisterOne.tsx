@@ -159,7 +159,6 @@ const MechanicRegisterForm: React.FC = () => {
         const result = await mechanicRegister(formData, mechanicId);
         if (result.data) {
           console.log("msk", result.data);
-
           toast.success("Successfully toasted!");
           navigate("/mechanic/home");
         } else {

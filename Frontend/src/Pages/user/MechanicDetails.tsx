@@ -1,233 +1,323 @@
+import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAppSelector } from "../../app/store";
 import Header from "../../Components/User/Header";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaMapMarkerAlt,
   FaTools,
   FaClock,
-  FaCalendarCheck,
   FaStar,
   FaQuoteLeft,
   FaWrench,
   FaTimes,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { MechanicProfile } from "../../Components/Common/Interface";
-import { useState } from "react";
 
-function MechanicDetails() {
+interface Review {
+  id: number;
+  name: string;
+  rating: number;
+  comment: string;
+}
+
+const MechanicDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const userSearchData = useAppSelector(
     (state) => state.auth.userSerchData
   ) as unknown as MechanicProfile[];
-
-  console.log("ww",id);
-  
   const mechanic = userSearchData.find((m) => m._id === id);
-
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+console.log("f",mechanic?.services);
 
   if (!mechanic) {
     return (
-      <div className="text-center py-20 text-2xl text-gray-600">
-        Mechanic not found
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex items-center justify-center h-screen bg-gray-50"
+      >
+        <p className="text-2xl text-gray-600 font-light">Mechanic not found</p>
+      </motion.div>
     );
   }
 
-  const dummyReviews = [
+  const dummyReviews: Review[] = [
     {
       id: 1,
       name: "John Doe",
       rating: 5,
-      comment: "Excellent service! Fixed my car in no time.",
+      comment: "Exceptional service! Fixed my car promptly and efficiently.",
     },
     {
       id: 2,
       name: "Jane Smith",
       rating: 4,
-      comment: "Very professional and knowledgeable.",
+      comment: "Very professional, knowledgeable, and courteous.",
     },
     {
       id: 3,
       name: "Mike Johnson",
       rating: 5,
-      comment: "Highly recommended. Great work!",
+      comment: "Highly recommended. Outstanding work and customer service!",
     },
   ];
+
+  const handleBooking = () => {
+    console.log("Booking initiated for mechanic:", mechanic.name);
+  };
 
   return (
     <>
       <Header />
-      <div className="bg-gradient-to-r from-blue-100 to-indigo-100 min-h-screen py-12">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="bg-gray-50 min-h-screen py-12"
+      >
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="bg-white shadow-2xl rounded-3xl overflow-hidden">
-            <div className="md:flex">
-              <div className="md:flex-shrink-0 relative">
-                <img
-                  className="h-96 w-full object-cover md:w-96"
-                  src={
-                    mechanic.profileImages[0]?.url ||
-                    "https://via.placeholder.com/400x400"
-                  }
-                  alt={mechanic.specialization}
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-                  <h2 className="text-4xl font-bold text-white">
-                    {mechanic.type} Mechanic
-                  </h2>
-                  <p className="text-xl text-indigo-300 mt-2">
-                    {mechanic.specialization}
-                  </p>
-                </div>
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white shadow-lg rounded-3xl overflow-hidden"
+          >
+            {/* Profile Image Section */}
+            <div className="relative h-64 bg-blue-500">
+              <img
+                src={mechanic.profileImages[1]?.url || "/default-profile.jpg"}
+                alt={mechanic.specialization}
+                className="h-full w-full object-cover"
+              />
+                <div className="absolute inset-0 flex items-center justify-center text-black text-4xl font-semibold">
+                {mechanic.specialization}
               </div>
-              <div className="p-8 flex flex-col justify-between flex-grow">
-                <div>
-                  <p className="text-gray-600 text-lg leading-relaxed">
-                    <span
-                      dangerouslySetInnerHTML={{ __html: mechanic.description }}
-                    />
-                  </p>
-                  <div className="mt-6 space-y-4">
-                    <div className="flex items-center text-gray-700">
-                      <FaMapMarkerAlt className="mr-3 text-red-500 text-xl" />
-                      <span>{mechanic.locationName}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <FaClock className="mr-3 text-blue-500 text-xl" />
-                      <span>{mechanic.drivingTime} minutes driving time</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <FaTools className="mr-3 text-green-500 text-xl" />
-                      <span>
-                        {mechanic.yearsOfExperience} years of experience
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button className="mt-8 w-full bg-indigo-600 text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
-                  <FaCalendarCheck className="mr-2" /> Book Appointment
-                </button>
-              </div>
-            </div>
-            <div className="px-8 py-10 bg-gray-100">
-              <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-                Our Services
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {[
-                  "Oil Change",
-                  "Brake Repair",
-                  "Tire Rotation",
-                  "Engine Tune-up",
-                  "Transmission Service",
-                  "Battery Replacement",
-                  "Air Conditioning",
-                  "Wheel Alignment",
-                  "Exhaust System",
-                  "Diagnostics",
-                ].map((service, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center transform hover:scale-105 transition duration-300 hover:bg-indigo-50"
-                  >
-                    <FaWrench className="text-indigo-500 mb-4 text-3xl" />
-                    <span className="text-gray-700 font-semibold text-lg text-center">
-                      {service}
-                    </span>
-                  </div>
-                ))}
+              <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-lg"
+                >
+                  <img
+                    src={
+                      mechanic.profileImages[0]?.url || "/default-profile.jpg"
+                    }
+                    alt={mechanic.name}
+                    className="h-full w-full object-cover"
+                  />
+                </motion.div>
               </div>
             </div>
 
-            <div className="px-8 py-10">
+            {/* Info Section */}
+            <div className="p-8 pt-20 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-800">
+                  {mechanic.name}
+                </h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Professional mechanic in {mechanic.locationName}, with{" "}
+                  {mechanic.yearsOfExperience} years of experience in automotive
+                  repair and maintenance.
+                </p>
+                <div className="mt-6 space-y-4">
+                  <InfoItem
+                    icon={<FaMapMarkerAlt className="text-blue-500" />}
+                    text={mechanic.locationName}
+                  />
+                  <InfoItem
+                    icon={<FaClock className="text-green-500" />}
+                    text={`${mechanic.drivingTime} minutes driving time`}
+                  />
+                  <InfoItem
+                    icon={<FaTools className="text-purple-500" />}
+                    text={`${mechanic.yearsOfExperience} years of experience`}
+                  />
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300"
+                  onClick={handleBooking}
+                >
+                  <FaCalendarAlt className="mr-2" />
+                  Book Now
+                </motion.button>
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-800">
+                  Services
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {mechanic.services.map((service, index) => (
+                    <ServiceItem key={index} service={service} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Gallery Section */}
+            <div className="px-8 py-10 bg-gray-100">
               <h3 className="text-2xl font-semibold text-gray-800 mb-6">
                 Gallery
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {mechanic.profileImages.map((image, index) => (
-                  <img
+                  <GalleryImage
                     key={index}
-                    src={image.url}
-                    alt={`Mechanic image ${index + 1}`}
-                    className="h-40 w-full object-cover rounded-lg shadow-md hover:shadow-xl transition duration-300 cursor-pointer"
+                    image={image}
                     onClick={() => setSelectedImage(image.url)}
                   />
                 ))}
               </div>
             </div>
 
-            <div className="px-8 py-10 bg-gray-50">
+            {/* Reviews Section */}
+            <div className="px-8 py-10">
               <h3 className="text-2xl font-semibold text-gray-800 mb-6">
                 Customer Reviews
               </h3>
               <div className="space-y-6">
                 {dummyReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition duration-300"
-                  >
-                    <div className="flex items-center mb-4">
-                      <img
-                        src={`https://api.dicebear.com/6.x/initials/svg?seed=${review.name}`}
-                        alt={review.name}
-                        className="w-12 h-12 rounded-full mr-4"
-                      />
-                      <div>
-                        <h4 className="font-semibold text-lg">{review.name}</h4>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <FaStar
-                              key={i}
-                              className={
-                                i < review.rating
-                                  ? "text-yellow-400"
-                                  : "text-gray-300"
-                              }
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 italic">
-                      <FaQuoteLeft className="text-indigo-300 mr-2 inline-block" />
-                      {review.comment}
-                    </p>
-                  </div>
+                  <ReviewItem key={review.id} review={review} />
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="mt-8 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 text-center"
+          >
             <Link
               to="/mechanicData"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300"
             >
               Back to List
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="max-w-3xl max-h-3xl relative">
-            <img
-              src={selectedImage}
-              alt="Selected mechanic"
-              className="max-w-full max-h-full"
-            />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 text-white text-2xl hover:text-gray-300"
-            >
-              <FaTimes />
-            </button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {selectedImage && (
+          <ImageModal
+            image={selectedImage}
+            onClose={() => setSelectedImage(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
+};
+
+interface InfoItemProps {
+  icon: React.ReactNode;
+  text: string;
 }
+
+const InfoItem: React.FC<InfoItemProps> = ({ icon, text }) => (
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="flex items-center text-gray-700"
+  >
+    <span className="mr-3 text-xl">{icon}</span>
+    <span>{text}</span>
+  </motion.div>
+);
+
+interface ServiceItemProps {
+  service: string;
+}
+
+const ServiceItem: React.FC<ServiceItemProps> = ({ service }) => (
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="bg-white p-4 rounded-xl shadow-sm flex items-center space-x-3 border border-gray-200"
+  >
+    <FaWrench className="text-blue-500" />
+    <span className="text-gray-700">{service}</span>
+  </motion.div>
+);
+
+interface GalleryImageProps {
+  image: { url: string };
+  onClick: () => void;
+}
+
+const GalleryImage: React.FC<GalleryImageProps> = ({ image, onClick }) => (
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="h-40 w-40 mx-auto overflow-hidden rounded-full shadow-md cursor-pointer"
+    onClick={onClick}
+  >
+    <img
+      src={image.url}
+      alt="Mechanic gallery"
+      className="h-full w-full object-cover"
+    />
+  </motion.div>
+);
+
+interface ReviewItemProps {
+  review: Review;
+}
+
+const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => (
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200"
+  >
+    <div className="flex items-center mb-4">
+      <div className="h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
+        <span className="text-xl font-bold text-white">{review.name[0]}</span>
+      </div>
+      <div className="ml-4">
+        <h4 className="text-lg font-semibold text-gray-800">{review.name}</h4>
+        <div className="flex items-center">
+          {[...Array(review.rating)].map((_, index) => (
+            <FaStar key={index} className="text-yellow-500" />
+          ))}
+        </div>
+      </div>
+    </div>
+    <p className="text-gray-600 leading-relaxed">
+      <FaQuoteLeft className="text-gray-400 mr-2" />
+      {review.comment}
+    </p>
+  </motion.div>
+);
+
+interface ImageModalProps {
+  image: string;
+  onClose: () => void;
+}
+
+const ImageModal: React.FC<ImageModalProps> = ({ image, onClose }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75"
+  >
+    <div className="relative">
+      <img
+        src={image}
+        alt="Selected"
+        className="max-w-full max-h-full rounded-lg"
+      />
+      <button
+        className="absolute top-2 right-2 text-white text-2xl"
+        onClick={onClose}
+      >
+        <FaTimes />
+      </button>
+    </div>
+  </motion.div>
+);
 
 export default MechanicDetails;

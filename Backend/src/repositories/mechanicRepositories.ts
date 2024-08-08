@@ -96,118 +96,77 @@ class mechanicRepositories {
         }
     }
 
-    // async registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
-    //     try {
-    //         console.log("Processing data...");
 
-    //         const formatImage = (url: string): { url: string; contentType: string } => ({
-    //             url,
-    //             contentType: 'image/jpeg',
-    //         });
-
-    //         const profileImages = [
-    //             uploadUrls.profileImage0,
-    //             uploadUrls.profileImage1,
-    //             uploadUrls.profileImage2,
-    //             uploadUrls.profileImage3,
-    //         ]
-    //             .filter(Boolean)
-    //             .map(formatImage);
-    //         const mechanicID = Types.ObjectId.createFromHexString(body.ID)
-    //         const mechanicData = new MechanicData({
-    //             mechanicID: mechanicID,
-    //             type: body.type,
-    //             licenseNumber: body.licenseNumber,
-    //             yearsOfExperience: body.yearsOfExperience,
-    //             specialization: body.specialization,
-    //             district: body.district,
-    //             latitude: body.latitude,
-    //             longitude: body.longitude,
-    //             locationName: body.locationName,
-    //             services: body.services,
-    //             description: body.description,
-    //             profileImages: profileImages, // Array of objects
-    //             certificate: uploadUrls.certificate
-    //                 ? formatImage(uploadUrls.certificate)
-    //                 : null,
-    //         });
-
-    //         const result = await mechanicData.save();
-    //         if (result) {
-    //             await Mechanic.findOneAndUpdate(
-    //                 { _id: mechanicID },
-    //                 {
-    //                     isCompleted: true,
-    //                     mechanicdataID: result._id,
-    //                 },
-    //                 { new: true }
-    //             );
-
-    //         }
-
-
-    //         return mechanicData;
-    //     } catch (error) {
-    //         console.error('Error in registerData:', error);
-    //         throw new Error('Failed to register mechanic data');
-    //     }
-    // }
-    async registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
+    async  registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
         try {
-          console.log("Processing data...");
+            console.log("Processing data...");
     
-          const formatImage = (url: string): { url: string; contentType: string } => ({
-            url,
-            contentType: 'image/jpeg',
-          });
+            // Utility function to format images
+            const formatImage = (url: string): { url: string; contentType: string } => ({
+                url,
+                contentType: 'image/jpeg',
+            });
     
-          const profileImages = [
-            uploadUrls.profileImage0,
-            uploadUrls.profileImage1,
-            uploadUrls.profileImage2,
-            uploadUrls.profileImage3,
-          ]
+            // Collect profile images
+            const profileImages = [
+                uploadUrls.profileImage0,
+                uploadUrls.profileImage1,
+                uploadUrls.profileImage2,
+                uploadUrls.profileImage3,
+            ]
             .filter(Boolean)
             .map(formatImage);
     
-          const mechanicID = Types.ObjectId.createFromHexString(body.ID);
+            // Parse mechanic ID
+            const mechanicID = Types.ObjectId.createFromHexString(body.ID);
     
-          const mechanicData = new MechanicData({
-            mechanicID: mechanicID,
-            type: body.type,
-            licenseNumber: body.licenseNumber,
-            yearsOfExperience: body.yearsOfExperience,
-            specialization: body.specialization,
-            district: body.district,
-            location: {
-              type: "Point",
-              coordinates: [parseFloat(body.longitude), parseFloat(body.latitude)]
-            },
-            locationName: body.locationName,
-            services: body.services,
-            description: body.description,
-            profileImages: profileImages,
-            certificate: uploadUrls.certificate
-              ? formatImage(uploadUrls.certificate)
-              : null,
-          });
+            // Parse and validate coordinates
+            const longitude = parseFloat(body.longitude);
+            const latitude = parseFloat(body.latitude);
     
-          const result = await mechanicData.save();
-          if (result) {
-            await Mechanic.findOneAndUpdate(
-              { _id: mechanicID },
-              {
-                isCompleted: true,
-                mechanicdataID: result._id,
-              },
-              { new: true }
-            );
-          }
+            // Validate coordinates
+            if (isNaN(longitude) || isNaN(latitude)) {
+                throw new Error('Invalid coordinates provided. Longitude and latitude must be valid numbers.');
+            }
     
-          return mechanicData;
+            // Create mechanic data instance
+            const mechanicData = new MechanicData({
+                mechanicID: mechanicID,
+                type: body.type,
+                licenseNumber: body.licenseNumber,
+                yearsOfExperience: body.yearsOfExperience,
+                specialization: body.specialization,
+                district: body.district,
+                location: {
+                    type: "Point",
+                    coordinates: [longitude, latitude] // Ensure this is an array of numbers
+                },
+                locationName: body.locationName,
+                services: body.services,
+                description: body.description,
+                profileImages: profileImages,
+                certificate: uploadUrls.certificate
+                    ? formatImage(uploadUrls.certificate)
+                    : null,
+            });
+    
+            // Save mechanic data
+            const result = await mechanicData.save();
+            if (result) {
+                await Mechanic.findOneAndUpdate(
+                    { _id: mechanicID },
+                    {
+                        isCompleted: true,
+                        mechanicdataID: result._id,
+                    },
+                    { new: true }
+                );
+            }
+    
+            return mechanicData;
         } catch (error) {
-          console.error('Error in registerData:', error);
-          throw new Error('Failed to register mechanic data');
+            console.error('Error in registerData:', error);
+            throw new Error('Failed to register mechanic data');
         }
     }
     async getmechData(id: string): Promise<any> {

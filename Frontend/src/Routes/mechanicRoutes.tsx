@@ -14,6 +14,7 @@ import MechanicProfile from "../Pages/mechanic/MechanicProfile.tsx";
 import Dashboard from "../Components/Mechanic/DashBord.tsx";
 import DetailedProfile from "../Pages/mechanic/DetailedProfile.tsx";
 import ChatPage from "../Pages/mechanic/ChatPage.tsx";
+import NotificationPage from "../Pages/mechanic/NotificationPage.tsx";
 
 function mechanicRoutes() {
   return (
@@ -32,7 +33,8 @@ function mechanicRoutes() {
         <Route path="register" element={<RegisterOne />} />
         <Route path="profile" element={<MechanicProfile />} />
         <Route path="profile/detailedProfile" element={<DetailedProfile />} />
-        <Route path="messages" element={<ChatPage />} />
+        <Route path="home/messages" element={<ChatPage />} />
+        <Route path="home/notifications" element={<NotificationPage />} />
 
         <Route path="home" element={<MechanicHome />}>
           <Route path="" element={<Dashboard />} />

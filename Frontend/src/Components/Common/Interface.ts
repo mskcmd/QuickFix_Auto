@@ -1,4 +1,5 @@
 export interface MechanicProfile {
+    name: string | undefined;
     bikingTime: number;
     certificate: {
       url: string;

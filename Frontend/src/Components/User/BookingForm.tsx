@@ -7,6 +7,7 @@ import { searchMechShop } from "../../Api/user";
 import { setUserSerchCredential } from "../../app/slice/AuthSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa";
 
 export interface FormData {
   locationName: string;
@@ -225,11 +226,11 @@ const BookingForm = forwardRef<HTMLDivElement>((_props, ref) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Choose Location</h2>
           <button
-            onClick={closeMapModal}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Close
-          </button>
+              onClick={closeMapModal}
+              className="text-gray-500 hover:text-gray-700 transition duration-150 ease-in-out"
+            >
+              <FaTimes size={24} />
+            </button>
         </div>
         <div className="mb-4 space-y-2">
           <div className="flex items-center space-x-2">

@@ -5,8 +5,10 @@ import ChatInterface from "../../Components/Mechanic/ChatInterface";
 const ChatPage: FC = () => {
   return (
     <>
-      <Header />
+    <div className="">
+    <Header />
       <ChatInterface />
+    </div>
     </>
   );
 };

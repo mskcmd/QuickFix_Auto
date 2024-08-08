@@ -1,7 +1,8 @@
-import mongoose, { Document, Model, Schema, Types } from "mongoose";
+import mongoose, { Model, Schema, Types } from "mongoose";
 import { IMechanicData } from "../interfaces/IMechanic";
 import Mechanic from "./mechanicModel"; // Assuming this is the correct import
 
+// Define the schema
 const MechanicDataSchema: Schema = new Schema({
   mechanicID: { 
     type: Schema.Types.ObjectId,
