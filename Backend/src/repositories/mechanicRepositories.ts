@@ -5,6 +5,7 @@ import MechanicData from "../models/mechanicdataModel";
 import { Types } from 'mongoose';
 
 import bcrypt from 'bcrypt';
+import { deleteFileFromS3 } from "../middleware/s3UploadMiddleware";
 
 class mechanicRepositories {
     async findUserByEmail(email: string): Promise<MechnicDoc | null> {
@@ -150,7 +151,7 @@ class mechanicRepositories {
                     : null,
             });
     
-            // Save mechanic data
+            // Save mechanic da ta
             const result = await mechanicData.save();
             if (result) {
                 await Mechanic.findOneAndUpdate(
@@ -166,6 +167,15 @@ class mechanicRepositories {
             return mechanicData;
         } catch (error) {
             console.error('Error in registerData:', error);
+            const imagesToDelete = [
+                uploadUrls.certificate,
+                uploadUrls.profileImage0,
+                uploadUrls.profileImage1,
+                uploadUrls.profileImage2,
+                uploadUrls.profileImage3,
+              ].filter(Boolean);
+          
+              await Promise.all(imagesToDelete.map(deleteFileFromS3));
             throw new Error('Failed to register mechanic data');
         }
     }

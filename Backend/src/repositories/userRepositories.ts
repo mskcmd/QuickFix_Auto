@@ -158,7 +158,6 @@ class UserRepository {
   // }
   async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
     try {
-      // Define the query object for $geoNear stage
       const query = type === 'all' ? {} : { type: type };
 
       const mechanics = await MechanicData.aggregate([

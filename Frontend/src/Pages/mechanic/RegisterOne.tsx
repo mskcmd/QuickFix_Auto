@@ -10,6 +10,8 @@ import { mechanicRegister } from "../../Api/mechanic";
 import { useAppSelector } from "../../app/store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
+
 Modal.setAppElement("#root");
 
 export interface MechanicFormData {
@@ -17,9 +19,9 @@ export interface MechanicFormData {
   licenseNumber: string;
   yearsOfExperience: string;
   specialization: string;
-  latitude: string,
-  longitude: string,
-  district: string,
+  latitude: string;
+  longitude: string;
+  district: string;
   locationName: string;
   services: string[];
   description: string;
@@ -43,6 +45,7 @@ const MechanicRegisterForm: React.FC = () => {
     certificate: null as File | null,
   });
 
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
@@ -156,10 +159,12 @@ const MechanicRegisterForm: React.FC = () => {
     if (validateForm()) {
       console.log("Form data:", formData);
       try {
+        setIsLoading(true);
         const result = await mechanicRegister(formData, mechanicId);
         if (result.data) {
           console.log("msk", result.data);
           toast.success("Successfully toasted!");
+          setIsLoading(false);
           navigate("/mechanic/home");
         } else {
           toast.error("This didn't work.");
@@ -182,15 +187,16 @@ const MechanicRegisterForm: React.FC = () => {
 
   const handleLocationSelect = async (lat: number, lng: number) => {
     setSelectedLocation([lat, lng]);
-  
+
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
       );
       const data = await response.json();
       const locationName = data.display_name || "Unknown location";
-      const district = data.address?.county || data.address?.city || "Unknown district";
-  
+      const district =
+        data.address?.county || data.address?.city || "Unknown district";
+
       setFormData((prevData) => ({
         ...prevData,
         latitude: lat.toString(),
@@ -210,7 +216,7 @@ const MechanicRegisterForm: React.FC = () => {
         district: "Unknown district",
       }));
     }
-  
+
     closeMapModal();
   };
 
@@ -631,8 +637,16 @@ const MechanicRegisterForm: React.FC = () => {
           <button
             type="submit"
             className="col-span-1 sm:col-span-2 md:col-span-3 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={isLoading}
           >
-            Register
+            {isLoading ? (
+              <>
+                <ClipLoader color="#ffffff" size={14} className="mr-2" />
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
         </form>
       </div>

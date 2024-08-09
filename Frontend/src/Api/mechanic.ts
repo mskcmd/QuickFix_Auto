@@ -115,9 +115,10 @@ export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicI
                 formData.append(`profileImage${index}`, file); // Ensure field names match
             });
         }
-        // Append services (if necessary, convert to JSON or a format expected by your API)
-        formData.append('services', JSON.stringify(mechanicData.services));
 
+        mechanicData.services.forEach((service, index) => {
+            formData.append(`services[${index}]`, service);
+          });
         // Send the request
         const result = await Api.post(mechanicRoute.Register, formData, {
             headers: {

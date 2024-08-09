@@ -252,7 +252,7 @@ interface GalleryImageProps {
 const GalleryImage: React.FC<GalleryImageProps> = ({ image, onClick }) => (
   <motion.div
     whileHover={{ scale: 1.05 }}
-    className="h-40 w-40 mx-auto overflow-hidden rounded-full shadow-md cursor-pointer"
+    className="h-50 w-50 mx-auto overflow-hidden  shadow-md cursor-pointer"
     onClick={onClick}
   >
     <img

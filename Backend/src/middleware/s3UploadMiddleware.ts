@@ -62,4 +62,19 @@ const uploadFile = async (file: UploadedFile): Promise<string> => {
   }
 };
 
+export const deleteFileFromS3 = async (fileUrl: string): Promise<void> => {
+  const key = fileUrl.split('.com/')[1];
+  const params = {
+    Bucket: process.env.BUCKET_NAME as string,
+    Key: key,
+  };
+
+  try {
+    await s3.deleteObject(params).promise();
+    console.log(`Successfully deleted file from S3: ${fileUrl}`);
+  } catch (error) {
+    console.error(`Error deleting file from S3: ${fileUrl}`, error);
+  }
+};
+
 export { uploadFile };
