@@ -153,18 +153,6 @@ const Users: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <button 
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md"
-          onClick={() => scroll('left')}
-        >
-          <FaChevronLeft />
-        </button>
-        <button 
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md"
-          onClick={() => scroll('right')}
-        >
-          <FaChevronRight />
-        </button>
       </div>
 
       <div className="mt-6">

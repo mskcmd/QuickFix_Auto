@@ -31,7 +31,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     }).then((result) => {
       if (result.isConfirmed) {
         logout().then(() => {
-          console.log("Mech logged out");
+          console.log("admin logged out");
         });
         dispatch(adminLogout());
         navigate("/admin/login");
