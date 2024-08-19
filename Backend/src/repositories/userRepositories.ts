@@ -1,10 +1,13 @@
 // repositories/userRepositories.ts
 import User from "../models/userModel";
-import { UseLog, UserDoc } from "../interfaces/IUser";
+import { IBookingData, UseLog, UserDoc } from "../interfaces/IUser";
 import bcrypt from 'bcrypt';
 import Admin from "../models/adminModel";
 import mongoose from 'mongoose';
 import MechanicData from "../models/mechanicdataModel";
+import Booking, { IBooking } from "../models/mechanikBookingModel";
+import Mechanic from "../models/mechanicModel";
+import { MechnicDoc } from "../interfaces/IMechanic";
 
 
 class UserRepository {
@@ -32,7 +35,6 @@ class UserRepository {
       throw error;
     }
   }
-
 
   async createUser(name: string, email: string, phone: string, password: string): Promise<UserDoc | undefined> {
     try {
@@ -75,7 +77,6 @@ class UserRepository {
       return { status: false, message: "An error occurred during login." };
     }
   }
-
 
   async resetPassword(password: string, userId: string) {
     try {
@@ -156,10 +157,11 @@ class UserRepository {
   //     throw error;
   //   }
   // }
+
   async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
     try {
       const query = type === 'all' ? {} : { type: type };
-
+ 
       const mechanics = await MechanicData.aggregate([
         {
           $geoNear: {
@@ -182,6 +184,7 @@ class UserRepository {
             location: 1,
             locationName: 1,
             services: 1,
+            workingHours: 1,
             description: 1,
             profileImages: 1,
             certificate: 1,
@@ -194,13 +197,40 @@ class UserRepository {
         }
       ]);
 
-      const formattedMechanics = mechanics.map(mechanic => ({
-        ...mechanic,
-        distanceKm: Number(mechanic.distanceKm.toFixed(2)),
-        walkingTime: Number(mechanic.walkingTime.toFixed(2)),
-        bikingTime: Number(mechanic.bikingTime.toFixed(2)),
-        drivingTime: Number(mechanic.drivingTime.toFixed(2))
-      }));
+      // const MData: MechnicDoc | null = await Mechanic.findOne({ mechanics. }).exec();
+ 
+
+      const formattedMechanics = await Promise.all(
+        mechanics.map(async mechanic => {
+          try {
+            // Fetch only specific fields from Mechanic model
+            const mechData = await Mechanic.findOne({ _id: mechanic.mechanicID })
+              .select('name email phone') // Only retrieve name, email, and phone
+              .exec();
+      
+            // Format and return the data
+            return {
+              ...mechanic,
+              mechData: mechData || null,
+              distanceKm: Number(mechanic.distanceKm.toFixed(2)),
+              walkingTime: Number(mechanic.walkingTime.toFixed(2)),
+              bikingTime: Number(mechanic.bikingTime.toFixed(2)),
+              drivingTime: Number(mechanic.drivingTime.toFixed(2))
+            };
+          } catch (error) {
+            console.error(`Error fetching mechData for mechanicID ${mechanic.mechanicID}:`, error);
+            return {
+              ...mechanic,
+              mechData: null, // Handle the error case
+              distanceKm: Number(mechanic.distanceKm.toFixed(2)),
+              walkingTime: Number(mechanic.walkingTime.toFixed(2)),
+              bikingTime: Number(mechanic.bikingTime.toFixed(2)),
+              drivingTime: Number(mechanic.drivingTime.toFixed(2))
+            };
+          }
+        })
+      );
+      
 
       console.log(`Found ${formattedMechanics.length} mechanics within ${maxDistance / 1000} km radius`);
       console.log(formattedMechanics);
@@ -210,6 +240,11 @@ class UserRepository {
       console.error("Error finding mechanics:", error);
       throw error;
     }
+  }
+
+  async createBooking(bookingData: IBookingData): Promise<IBooking> {
+    const newBooking = new Booking(bookingData);
+    return await newBooking.save();
   }
 
 }

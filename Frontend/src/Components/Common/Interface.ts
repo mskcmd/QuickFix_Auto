@@ -1,4 +1,5 @@
 export interface MechanicProfile {
+    workingHours: any;
     name: string | undefined;
     bikingTime: number;
     certificate: {

@@ -10,6 +10,9 @@ import OTPComponent from "../Pages/user/OtpPassReset.tsx";
 import Erorr404 from "../Components/Common/ErorrPage/Erorr404.tsx";
 import MechnichData from "../Pages/user/MechnichData.tsx";
 import MechanicDetails from "../Pages/user/MechanicDetails.tsx";
+import UserLogdin from "../Components/User/UserCommen/UserLogdin.tsx";
+import UserProfile from "../Pages/user/UserProfile.tsx";
+import MechBooking from "../Pages/user/MechBooking.tsx";
 
 function userRoutes() {
   return (
@@ -25,6 +28,11 @@ function userRoutes() {
         <Route path="forgetPassword" element={<ForgertPasswort />} />
         <Route path="/reset/:userid" element={<RestOtp />} />
       </Route>
+      <Route element={<UserLogdin />}>
+          <Route path="profiler" element={<UserProfile />} />
+          <Route path="booking/:id" element={<MechBooking />} />
+      </Route>
+
       <Route path="*" element={<Erorr404 />}></Route>
     </Routes>
   );

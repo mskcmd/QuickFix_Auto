@@ -90,9 +90,55 @@ export const resetPassword = async (password: string, userId: string) => {
     }
 };
 
+// export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicId: string | undefined): Promise<AxiosResponse<unknown>> => {
+//     try {
+//         const formData = new FormData();
+//         // Append basic fields
+//         if (mechanicId) {
+//             formData.append('ID', mechanicId);
+//         }
+//         formData.append('type', mechanicData.type);
+//         formData.append('licenseNumber', mechanicData.licenseNumber);
+//         formData.append('yearsOfExperience', mechanicData.yearsOfExperience);
+//         formData.append('specialization', mechanicData.specialization);
+//         formData.append('latitude', mechanicData.latitude);
+//         formData.append('longitude', mechanicData.longitude);
+//         formData.append('district', mechanicData.district);
+//         formData.append('locationName', mechanicData.locationName);
+//         formData.append('description', mechanicData.description);
+//         // Append files
+//         if (mechanicData.certificate) {
+//             formData.append('certificate', mechanicData.certificate);
+//         }
+//         if (mechanicData.profileImages && mechanicData.profileImages.length > 0) {
+//             mechanicData.profileImages.forEach((file, index) => {
+//                 formData.append(`profileImage${index}`, file); // Ensure field names match
+//             });
+//         }
+
+//         mechanicData.services.forEach((service, index) => {
+//             formData.append(`services[${index}]`, service);
+//           });
+//         // Send the request
+//         const result = await Api.post(mechanicRoute.Register, formData, {
+//             headers: {
+//                 'Content-Type': 'multipart/form-data',
+//             },
+//         });
+//         console.log("4days",result);
+//         return result
+
+//     } catch (error) {
+//         console.error('Error during registration:', error);
+//         throw error; // Optionally rethrow the error    
+//         }
+// };
+
+
 export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicId: string | undefined): Promise<AxiosResponse<unknown>> => {
     try {
         const formData = new FormData();
+
         // Append basic fields
         if (mechanicId) {
             formData.append('ID', mechanicId);
@@ -106,56 +152,65 @@ export const mechanicRegister = async (mechanicData: MechanicFormData, mechanicI
         formData.append('district', mechanicData.district);
         formData.append('locationName', mechanicData.locationName);
         formData.append('description', mechanicData.description);
+
         // Append files
         if (mechanicData.certificate) {
             formData.append('certificate', mechanicData.certificate);
         }
         if (mechanicData.profileImages && mechanicData.profileImages.length > 0) {
             mechanicData.profileImages.forEach((file, index) => {
-                formData.append(`profileImage${index}`, file); // Ensure field names match
+                formData.append(`profileImage${index}`, file);
             });
         }
 
+        // Append services
         mechanicData.services.forEach((service, index) => {
             formData.append(`services[${index}]`, service);
-          });
+        });
+
+        // Append working hours
+        mechanicData.workingHours.forEach((schedule, index) => {
+            formData.append(`workingHours[${index}][days]`, JSON.stringify(schedule.days));
+            formData.append(`workingHours[${index}][startTime]`, schedule.startTime);
+            formData.append(`workingHours[${index}][endTime]`, schedule.endTime);
+        });
+
         // Send the request
         const result = await Api.post(mechanicRoute.Register, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        console.log("4days",result);
-        return result
-        
+        console.log("Registration result:", result);
+        return result;
+
     } catch (error) {
         console.error('Error during registration:', error);
-        throw error; // Optionally rethrow the error    
-        }
+        throw error;
+    }
 };
-
 export const getmechData = async (mechanicId: string): Promise<MechanicDataItem[]> => {
     try {
-      const result = await Api.get<MechanicDataItem[]>(mechanicRoute.getData, { params: { Id: mechanicId } });
-      return result.data;
+        const result = await Api.get<MechanicDataItem[]>(mechanicRoute.getData, { params: { Id: mechanicId } });
+        return result.data;
     } catch (error) {
-      console.error("Error fetching mechanic data:", error);
-      throw error;
+        console.error("Error fetching mechanic data:", error);
+        throw error;
     }
-  };
+};
 
-  export const  getDetailesData = async (mechanicId: string)=> {
+export const getDetailesData = async (mechanicId: string) => {
     try {
-      console.log("Fetching dasta for mechanic ID:", mechanicId);
-      const result = await Api.get(mechanicRoute.getMcechData, { params: { Id: mechanicId } });
-      return result.data;
+        console.log("Fetching dasta for mechanic ID:", mechanicId);
+        const result = await Api.get(mechanicRoute.getMcechData, { params: { Id: mechanicId } });
+        return result.data;
     } catch (error) {
-      console.error("Error fetching mechanic data:", error);
-      throw error;
+        console.error("Error fetching mechanic data:", error);
+        throw error;
     }
-  };
+};
 
-  export const logout = async () => {
+export const logout = async () => {
     try {
         return await Api.get(mechanicRoute.mechLogout)
     } catch (error) {

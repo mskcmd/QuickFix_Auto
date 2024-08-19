@@ -14,6 +14,12 @@ import { ClipLoader } from "react-spinners";
 
 Modal.setAppElement("#root");
 
+interface WorkingHours {
+  days: string[];
+  startTime: string;
+  endTime: string;
+}
+
 export interface MechanicFormData {
   type: string;
   licenseNumber: string;
@@ -27,10 +33,11 @@ export interface MechanicFormData {
   description: string;
   profileImages: File[];
   certificate: File | null;
+  workingHours: WorkingHours[];
 }
 
 const MechanicRegisterForm: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MechanicFormData>({
     type: "",
     licenseNumber: "",
     yearsOfExperience: "",
@@ -39,23 +46,24 @@ const MechanicRegisterForm: React.FC = () => {
     longitude: "",
     district: "",
     locationName: "",
-    services: [] as string[],
+    services: [],
     description: "",
-    profileImages: [] as File[],
-    certificate: null as File | null,
+    profileImages: [],
+    certificate: null,
+    workingHours: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<
-    [number, number] | null
-  >(null);
+  const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([0, 0]);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [serviceInput, setServiceInput] = useState("");
+  const [workDays, setWorkDays] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -145,32 +153,36 @@ const MechanicRegisterForm: React.FC = () => {
     )
       newErrors.certificate = "Certificate file is required in PDF format";
 
+    if (formData.workingHours.length === 0)
+      newErrors.workingHours = "At least one set of working hours is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const navigate = useNavigate();
 
   const mechanicData = useAppSelector((state) => state.auth.mechanicData);
-  console.log("red.", mechanicData);
   const mechanicId = mechanicData?.mechnicId;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form data:", formData);
       try {
         setIsLoading(true);
         const result = await mechanicRegister(formData, mechanicId);
         if (result.data) {
-          console.log("msk", result.data);
-          toast.success("Successfully toasted!");
+          toast.success("Successfully registered!");
           setIsLoading(false);
           navigate("/mechanic/home");
         } else {
-          toast.error("This didn't work.");
+          toast.error("Registration failed.");
         }
       } catch (error) {
         console.error("Error during registration:", error);
+        toast.error("An error occurred during registration.");
+      } finally {
+        setIsLoading(false);
       }
     } else {
       console.log("Form has errors");
@@ -201,7 +213,6 @@ const MechanicRegisterForm: React.FC = () => {
         ...prevData,
         latitude: lat.toString(),
         longitude: lng.toString(),
-        location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
         locationName: locationName,
         district: district,
       }));
@@ -211,7 +222,6 @@ const MechanicRegisterForm: React.FC = () => {
         ...prevData,
         latitude: lat.toString(),
         longitude: lng.toString(),
-        location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
         locationName: "Unknown location",
         district: "Unknown district",
       }));
@@ -252,7 +262,6 @@ const MechanicRegisterForm: React.FC = () => {
         setMapCenter([parseFloat(lat), parseFloat(lon)]);
         setFormData((prevData) => ({
           ...prevData,
-          location: `${lat}, ${lon}`,
           locationName: display_name || "Unknown location",
         }));
       }
@@ -270,8 +279,7 @@ const MechanicRegisterForm: React.FC = () => {
 
     React.useEffect(() => {
       map.setView(mapCenter, map.getZoom());
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mapCenter]);
+    }, [map]);
 
     return selectedLocation ? (
       <Marker position={selectedLocation}></Marker>
@@ -300,6 +308,35 @@ const MechanicRegisterForm: React.FC = () => {
       ...prevData,
       services: prevData.services.filter((_, index) => index !== indexToRemove),
     }));
+  };
+
+  const handleWorkDayChange = (day: string) => {
+    setWorkDays(prev => 
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    );
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === "startTime") setStartTime(value);
+    if (name === "endTime") setEndTime(value);
+  };
+
+  const addWorkingHours = () => {
+    if (workDays.length && startTime && endTime) {
+      const newWorkingHours: WorkingHours = {
+        days: workDays,
+        startTime,
+        endTime
+      };
+      setFormData(prev => ({
+        ...prev,
+        workingHours: [...prev.workingHours, newWorkingHours]
+      }));
+      setWorkDays([]);
+      setStartTime("");
+      setEndTime("");
+    }
   };
 
   return (
@@ -479,6 +516,98 @@ const MechanicRegisterForm: React.FC = () => {
             </div>
             {errors.services && (
               <p className="text-red-500 text-xs mt-1">{errors.services}</p>
+            )}
+          </div>
+
+          <div className="col-span-1 sm:col-span-2 md:col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Working Hours
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Select working days:
+                </p>
+                {[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((day) => (
+                  <label
+                    key={day}
+                    className="inline-flex items-center mr-4 mb-2"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={workDays.includes(day)}
+                      onChange={() => handleWorkDayChange(day)}
+                      className="form-checkbox h-5 w-5 text-indigo-600"
+                    />
+                    <span className="ml-2 text-gray-700">{day}</span>
+                  </label>
+                ))}
+              </div>
+              <div>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div>
+                    <label
+                      htmlFor="startTime"
+                      className="block text-sm text-gray-600"
+                    >
+                      Start Time
+                    </label>
+                    <input
+                      type="time"
+                      id="startTime"
+                      name="startTime"
+                      value={startTime}
+                      onChange={handleTimeChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="endTime"
+                      className="block text-sm text-gray-600"
+                    >
+                      End Time
+                    </label>
+                    <input
+                      type="time"
+                      id="endTime"
+                      name="endTime"
+                      value={endTime}
+                      onChange={handleTimeChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={addWorkingHours}
+                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Working Hours
+                </button>
+              </div>
+            </div>
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Current Working Hours:
+              </h4>
+              {formData.workingHours.map((schedule, index) => (
+                <div key={index} className="bg-gray-100 rounded-md p-2 mb-2">
+                  {schedule.days.join(", ")} from {schedule.startTime} to{" "}
+                  {schedule.endTime}
+                </div>
+              ))}
+            </div>
+            {errors.workingHours && (
+              <p className="text-red-500 text-xs mt-1">{errors.workingHours}</p>
             )}
           </div>
 

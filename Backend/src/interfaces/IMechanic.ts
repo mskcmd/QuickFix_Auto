@@ -27,21 +27,25 @@ declare module 'express-session' {
 
 
 export interface IMechanicData extends Document {
-  ID?: string;
+  mechanicID?: string; // Optional mechanic ID
   type: string;
   licenseNumber: string;
-  yearsOfExperience: number; // Changed to number for consistency
+  yearsOfExperience: number;
   specialization: string;
-  latitude: string,
-  longitude: string,
-  district: string,
+  latitude: string;
+  longitude: string;
+  district: string;
   locationName: string;
   services: string[];
   description: string;
   profileImages: { url: string; contentType: string }[];
   certificate: { url: string; contentType: string } | null;
+  workingHours: {
+    days: string[]; // Array of days, e.g., ['Monday', 'Tuesday']
+    startTime: string; // Start time, e.g., '08:00'
+    endTime: string; // End time, e.g., '17:00'
+  }[];
 }
-
 
 
 export interface UploadedFile {

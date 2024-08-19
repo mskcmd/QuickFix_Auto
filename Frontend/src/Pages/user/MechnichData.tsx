@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt, FaTools, FaStar, FaTimes, FaSearch, FaMapPin } from "react-icons/fa";
+import { FaMapMarkerAlt, FaTools, FaStar, FaTimes, FaSearch, FaMapPin, FaClock } from "react-icons/fa";
 import Modal from "react-modal";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import * as Yup from "yup";
@@ -19,6 +19,11 @@ interface MechanicProfile {
   distanceKm: number;
   type: string;
   profileImages: { url: string }[];
+  workingHours: Array<{
+    days: string[];
+    startTime: string;
+    endTime: string;
+  }>;
 }
 
 interface FormData {
@@ -30,52 +35,85 @@ interface FormData {
 }
 
 // MechanicCard component
-const MechanicCard: React.FC<{ mechanic: MechanicProfile }> = ({ mechanic }) => (
-  <article className="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
-    <img
-      src={mechanic.profileImages[0]?.url || "https://via.placeholder.com/300x150"}
-      alt={`${mechanic.specialization} mechanic`}
-      className="w-full h-40 object-cover"
-    />
-    <div className="p-4">
-      <h2 className="text-lg font-semibold mb-2 text-gray-800">
-        {mechanic.specialization}
-      </h2>
-      <p className="flex items-center text-sm mb-1 text-gray-600">
-        <FaMapMarkerAlt className="mr-2 text-red-500" aria-hidden="true" />
-        <span>{mechanic.distanceKm.toFixed(2)} km away</span>
-      </p>
-      <p className="flex items-center text-sm mb-2 text-gray-600">
-        <FaTools className="mr-2 text-blue-500" aria-hidden="true" />
-        <span>{mechanic.type}</span>
-      </p>
-      <div className="flex items-center mb-3" aria-label={`Rating: 4 out of 5 stars`}>
-        {[...Array(5)].map((_, i) => (
-          <FaStar
-            key={i}
-            className={`${i < 4 ? "text-yellow-400" : "text-gray-300"} w-4 h-4`}
-            aria-hidden="true"
-          />
-        ))}
-        <span className="text-sm text-gray-600 ml-2">(4.0)</span>
+const MechanicCard: React.FC<{ mechanic: MechanicProfile }> = ({ mechanic }) => {
+  const formatDays = (daysArray: string[]) => {
+    if (daysArray.length === 0) return "Not specified";
+    const days = JSON.parse(daysArray[0]);
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const sortedDays = days.sort((a: string, b: string) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b));
+    
+    if (sortedDays.length === 7) return "Mon-Sun";
+    if (sortedDays.length === 6 && !sortedDays.includes("Sunday")) return "Mon-Sat";
+    if (sortedDays.length === 5 && sortedDays.includes("Monday") && sortedDays.includes("Friday")) return "Mon-Fri";
+    
+    const firstDay = sortedDays[0].slice(0, 3);
+    const lastDay = sortedDays[sortedDays.length - 1].slice(0, 3);
+    return `${firstDay}-${lastDay}`;
+  };
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hoursNum = parseInt(hours, 10);
+    const ampm = hoursNum >= 12 ? 'PM' : 'AM';
+    const formattedHours = hoursNum % 12 || 12;
+    return `${formattedHours}:${minutes} ${ampm}`;
+  };
+
+  return (
+    <article className="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
+      <img
+        src={mechanic.profileImages[0]?.url || "https://via.placeholder.com/300x150"}
+        alt={`${mechanic.specialization} mechanic`}
+        className="w-full h-40 object-cover"
+      />
+      <div className="p-4">
+        <h2 className="text-lg font-semibold mb-2 text-gray-800">
+          {mechanic.specialization}
+        </h2>
+        <p className="flex items-center text-sm mb-1 text-gray-600">
+          <FaMapMarkerAlt className="mr-2 text-red-500" aria-hidden="true" />
+          <span>{mechanic.distanceKm.toFixed(2)} km away</span>
+        </p>
+        <p className="flex items-center text-sm mb-2 text-gray-600">
+          <FaTools className="mr-2 text-blue-500" aria-hidden="true" />
+          <span>{mechanic.type}</span>
+        </p>
+        {mechanic.workingHours && mechanic.workingHours.length > 0 && (
+          <p className="flex items-center text-sm mb-2 text-gray-600">
+            <FaClock className="mr-2 text-green-500" aria-hidden="true" />
+            <span>
+              {formatDays(mechanic.workingHours[0].days)}: {formatTime(mechanic.workingHours[0].startTime)} - {formatTime(mechanic.workingHours[0].endTime)}
+            </span>
+          </p>
+        )}
+        <div className="flex items-center mb-3" aria-label={`Rating: 4 out of 5 stars`}>
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              className={`${i < 4 ? "text-yellow-400" : "text-gray-300"} w-4 h-4`}
+              aria-hidden="true"
+            />
+          ))}
+          <span className="text-sm text-gray-600 ml-2">(4.0)</span>
+        </div>
+        <div className="flex space-x-2">
+          <Link
+            to={`/mechanicData/${mechanic._id}`}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 px-3 rounded transition duration-300 text-center"
+          >
+            View Details
+          </Link>
+          <Link 
+            to={`/booking/${mechanic._id}`}
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded transition duration-300 text-center"
+          >
+            Book Now
+          </Link>
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <Link
-          to={`/mechanicData/${mechanic._id}`}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 px-3 rounded transition duration-300 text-center"
-        >
-          View Details
-        </Link>
-        <Link
-          to={`/booking/${mechanic._id}`}
-          className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded transition duration-300 text-center"
-        >
-          Book Now
-        </Link>
-      </div>
-    </div>
-  </article>
-);
+    </article>
+  );
+};
 
 // BookingForm component
 const BookingForm: React.FC = () => {
@@ -353,7 +391,8 @@ const MechanicListingPage: React.FC = () => {
     (state: RootState) => state.auth.userSerchData
   ) as unknown as MechanicProfile[];
   const [filter, setFilter] = useState("All");
-console.log(filter,userSearchData);
+console.log("mm",filter,userSearchData);
+console.log("ff",userSearchData);
 
 const filteredData = userSearchData.filter(
   (mechanic) => filter === "All" || mechanic.type === filter.toLowerCase()

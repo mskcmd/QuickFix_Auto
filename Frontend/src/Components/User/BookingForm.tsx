@@ -141,8 +141,8 @@ const BookingForm = forwardRef<HTMLDivElement>((_props, ref) => {
       setErrors({});
       console.log("Form data is valid", formData);
       const result:any = await searchMechShop(formData)
+      console.log("fghj",result);
       dispatch(setUserSerchCredential(result));
-      console.log(result);
       navigate('/mechanicData')
     } catch (err) {
       if (err instanceof Yup.ValidationError) {

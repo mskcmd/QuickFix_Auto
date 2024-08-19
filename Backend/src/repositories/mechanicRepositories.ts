@@ -30,8 +30,6 @@ class mechanicRepositories {
         }
     }
 
-
-
     async login(email: string, password: string) {
         try {
             const mechanic = await Mechanic.findOne({ email }).select('-password');
@@ -97,17 +95,18 @@ class mechanicRepositories {
         }
     }
 
+    async registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
+        console.log("ff,", body);
 
-    async  registerData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
         try {
             console.log("Processing data...");
-    
+
             // Utility function to format images
             const formatImage = (url: string): { url: string; contentType: string } => ({
                 url,
                 contentType: 'image/jpeg',
             });
-    
+
             // Collect profile images
             const profileImages = [
                 uploadUrls.profileImage0,
@@ -115,21 +114,27 @@ class mechanicRepositories {
                 uploadUrls.profileImage2,
                 uploadUrls.profileImage3,
             ]
-            .filter(Boolean)
-            .map(formatImage);
-    
+                .filter(Boolean)
+                .map(formatImage);
+
             // Parse mechanic ID
             const mechanicID = Types.ObjectId.createFromHexString(body.ID);
-    
+
             // Parse and validate coordinates
             const longitude = parseFloat(body.longitude);
             const latitude = parseFloat(body.latitude);
-    
-            // Validate coordinates
+
             if (isNaN(longitude) || isNaN(latitude)) {
                 throw new Error('Invalid coordinates provided. Longitude and latitude must be valid numbers.');
             }
-    
+
+            // Parse working hours
+            const workingHours = body.workingHours.map((schedule: any) => ({
+                days: schedule.days, // Expecting an array of strings representing days
+                startTime: schedule.startTime, // Expecting a string representing start time
+                endTime: schedule.endTime, // Expecting a string representing end time
+            }));
+
             // Create mechanic data instance
             const mechanicData = new MechanicData({
                 mechanicID: mechanicID,
@@ -140,7 +145,7 @@ class mechanicRepositories {
                 district: body.district,
                 location: {
                     type: "Point",
-                    coordinates: [longitude, latitude] // Ensure this is an array of numbers
+                    coordinates: [longitude, latitude], // Ensure this is an array of numbers
                 },
                 locationName: body.locationName,
                 services: body.services,
@@ -149,9 +154,10 @@ class mechanicRepositories {
                 certificate: uploadUrls.certificate
                     ? formatImage(uploadUrls.certificate)
                     : null,
+                workingHours: workingHours,
             });
-    
-            // Save mechanic da ta
+
+            // Save mechanic data
             const result = await mechanicData.save();
             if (result) {
                 await Mechanic.findOneAndUpdate(
@@ -163,7 +169,7 @@ class mechanicRepositories {
                     { new: true }
                 );
             }
-    
+
             return mechanicData;
         } catch (error) {
             console.error('Error in registerData:', error);
@@ -173,12 +179,15 @@ class mechanicRepositories {
                 uploadUrls.profileImage1,
                 uploadUrls.profileImage2,
                 uploadUrls.profileImage3,
-              ].filter(Boolean);
-          
-              await Promise.all(imagesToDelete.map(deleteFileFromS3));
+            ].filter(Boolean);
+
+            // Clean up uploaded images if the registration fails
+            await Promise.all(imagesToDelete.map(deleteFileFromS3));
+
             throw new Error('Failed to register mechanic data');
         }
     }
+
     async getmechData(id: string): Promise<any> {
         try {
             const objectId = new mongoose.Types.ObjectId(id);
@@ -190,7 +199,7 @@ class mechanicRepositories {
         }
     }
 
-    async   getDetailData(id: string): Promise<any> {
+    async getDetailData(id: string): Promise<any> {
         try {
             const objectId = new mongoose.Types.ObjectId(id);
             const result = await Mechanic.aggregate([

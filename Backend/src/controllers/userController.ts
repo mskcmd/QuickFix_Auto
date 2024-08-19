@@ -1,22 +1,30 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import UserServices from "../services/userServices";
-import { UserDoc } from "../interfaces/IUser"
-import { Cookie } from "express-session";
+import { IBookingData, UserDoc } from "../interfaces/IUser";
 import { sendVerifyMail } from "../utils/otpVerification";
-import { log } from "console";
+import { IBooking } from "../models/mechanikBookingModel";
+import { Schema } from "mongoose";
+
 class UserController {
   private userService: UserServices;
 
-  milliseconds = (h: number, m: number, s: number) => ((h * 3600 + m * 60 + s) * 1000);
+  milliseconds = (h: number, m: number, s: number) =>
+    (h * 3600 + m * 60 + s) * 1000;
 
   constructor(userService: UserServices) {
     this.userService = userService;
   }
+
   async signup(req: Request, res: Response): Promise<void> {
     try {
       console.log("All data", req.body);
       const { name, email, phone, password }: UserDoc = req.body;
-      const result = await this.userService.createUser(name, email, phone, password);
+      const result = await this.userService.createUser(
+        name,
+        email,
+        phone,
+        password
+      );
       req.session.otp = result.otp;
       req.session.userId = result.newUser?._id as string;
       req.session.email = result.newUser?.email as string;
@@ -28,7 +36,12 @@ class UserController {
       req.session.otpTime = otpExpirationTime;
 
       if (result && result.status) {
-        res.json({ isUser: true, success: true, result, message: result.message });
+        res.json({
+          isUser: true,
+          success: true,
+          result,
+          message: result.message,
+        });
       } else {
         res.json({ notSuccess: false, message: result.message });
       }
@@ -48,7 +61,7 @@ class UserController {
       // Check if OTP is expired
       if (!otpExpirationTime || currentTime > otpExpirationTime) {
         res.json({ message: "OTP has expired", Isexpired: true });
-        return
+        return;
       }
 
       const userId: any = req.session.userId;
@@ -56,7 +69,12 @@ class UserController {
         const result = await this.userService.veryfyOtp(userId);
         console.log("userdata", result);
         if (result && result.status) {
-          res.json({ isUser: true, success: true, result, message: result.message });
+          res.json({
+            isUser: true,
+            success: true,
+            result,
+            message: result.message,
+          });
         } else {
           res.json({ notSuccess: false, message: result.message });
         }
@@ -69,7 +87,6 @@ class UserController {
     }
   }
 
-
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -79,7 +96,7 @@ class UserController {
       console.log("yy", result?.result?.isVerified);
 
       if (result?.result?.isVerified === false) {
-        res.json({ isverified: false, message: 'User not verified', result });
+        res.json({ isverified: false, message: "User not verified", result });
         return;
       }
 
@@ -89,29 +106,35 @@ class UserController {
         const accessTokenMaxAge = 5 * 60 * 1000; // 5 minutes
         const refreshTokenMaxAge = 48 * 60 * 60 * 1000; // 48 hours
 
-        res.status(200)
-          .cookie('access_token', access_token, {
+        res
+          .status(200)
+          .cookie("access_token", access_token, {
             maxAge: accessTokenMaxAge,
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: "none",
             secure: true,
           })
-          .cookie('refresh_token', refresh_token, {
+          .cookie("refresh_token", refresh_token, {
             maxAge: refreshTokenMaxAge,
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: "none",
             secure: true,
           })
           .json({ success: true, data: result.data.data });
       } else {
-        res.json({ IsData: false, message: 'Invalid email or password', result });
+        res.json({
+          IsData: false,
+          message: "Invalid email or password",
+          result,
+        });
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   }
-
 
   async resendOtp(req: Request, res: Response): Promise<void> {
     try {
@@ -120,7 +143,7 @@ class UserController {
       console.log(email, name);
 
       if (!email || !name) {
-        res.status(400).json({ error: 'Email or name is missing' });
+        res.status(400).json({ error: "Email or name is missing" });
         return;
       }
       const otp: string = await sendVerifyMail(name, email);
@@ -128,10 +151,10 @@ class UserController {
       const otpExpirationTime = currentTime + 30 * 1000;
       req.session.otpTime = otpExpirationTime;
       req.session.otp = otp;
-      res.status(200).json({ message: 'OTP sent successfully', isOtp: true });
+      res.status(200).json({ message: "OTP sent successfully", isOtp: true });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: 'Failed to send OTP' });
+      res.status(500).json({ error: "Failed to send OTP" });
     }
   }
 
@@ -141,7 +164,7 @@ class UserController {
       console.log(email);
 
       if (!email) {
-        res.status(400).json({ error: 'Email is required' });
+        res.status(400).json({ error: "Email is required" });
         return;
       }
       const result = await this.userService.forgetService(email);
@@ -157,39 +180,39 @@ class UserController {
         req.session.otp = otp;
         res.json({ success: true, result });
       } else if (!name) {
-        res.status(400).json({ error: 'User name is missing' });
+        res.status(400).json({ error: "User name is missing" });
       } else {
-        res.status(500).json({ error: 'Failed to forget password' });
+        res.status(500).json({ error: "Failed to forget password" });
       }
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: "Internal server error" });
     }
   }
+
   async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       const newPassword = req.body.password;
       const userId = req.body.userId;
 
-      console.log('Received newPassword:', newPassword);
-      console.log('Received userId:', userId);
+      console.log("Received newPassword:", newPassword);
+      console.log("Received userId:", userId);
 
-      const result = await this.userService.resetPassword(newPassword, userId)
-      res.json({ result })
+      const result = await this.userService.resetPassword(newPassword, userId);
+      res.json({ result });
     } catch (error) {
-      console.error('Error resetting password:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error resetting password:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 
   async veryfyOtpreset(req: Request, res: Response): Promise<void> {
     try {
-
       const { otp, userId } = req.query;
       console.log("gf", req.query);
 
-      if (typeof otp !== 'string' || typeof userId !== 'string') {
-        res.status(400).json({ error: 'Invalid request parameters' });
+      if (typeof otp !== "string" || typeof userId !== "string") {
+        res.status(400).json({ error: "Invalid request parameters" });
         return;
       }
 
@@ -206,7 +229,7 @@ class UserController {
       if (otpString === req.session.otp) {
         console.log("good");
         const result = await this.userService.checkExistingUser(userId);
-        res.json({ success: true, result })
+        res.json({ success: true, result });
       } else {
         res.json({ message: "OTP is wrong" });
       }
@@ -218,42 +241,89 @@ class UserController {
 
   async userLogout(req: Request, res: Response): Promise<void> {
     try {
-      res.cookie('access_token', '', {
-        maxAge: 0
-      }).cookie('refresh_token', '', {
-        maxAge: 0
-      })
-      res.status(200).json({ success: true, message: 'user logout - clearing cookie' })
+      res
+        .cookie("access_token", "", {
+          maxAge: 0,
+        })
+        .cookie("refresh_token", "", {
+          maxAge: 0,
+        });
+      res
+        .status(200)
+        .json({ success: true, message: "user logout - clearing cookie" });
     } catch (error) {
       console.log(error);
     }
   }
 
-  
   async searchMechanic(req: Request, res: Response): Promise<void> {
     try {
       const { latitude, longitude, type } = req.query;
 
       if (!latitude || !longitude || !type) {
-        res.status(400).send('Missing parameters');
+        res.status(400).send("Missing parameters");
         return;
       }
 
       // Convert query parameters to numbers
       const userLat = parseFloat(latitude as string);
       const userLon = parseFloat(longitude as string);
-      console.log(userLat,userLat);
-      
+      console.log(userLat, userLat);
 
       // Use the service to get mechanics
-      const result = await this.userService.searchMechanics(userLat, userLon, type as string);
+      const result = await this.userService.searchMechanics(
+        userLat,
+        userLon,
+        type as string
+      );
 
       res.json(result);
     } catch (error) {
       console.log(error);
-      res.status(500).send('Server error');
+      res.status(500).send("Server error");
+    }
+  }
+
+  async mechBooking(req: Request, res: Response): Promise<void> {
+    console.log("booking", req.body);
+    try {
+      const bookingData: IBookingData = {
+        user: req.body.user,
+        mechanic: req.body.mechanic,
+        coordinates: req.body.coordinates,
+        bookingTime: new Date(req.body.bookingTime),
+        serviceDetails: req.body.serviceDetails,
+        status: req.body.status,
+        name: req.body.name,
+        mobileNumber: req.body.mobileNumber,
+        complainDescription: req.body.complainDescription,
+      };
+      if (
+        !bookingData.user ||
+        !bookingData.mechanic ||
+        !bookingData.coordinates ||
+        !bookingData.bookingTime ||
+        !bookingData.serviceDetails ||
+        !bookingData.status ||
+        !bookingData.name ||
+        !bookingData.mobileNumber
+      ) {
+        res
+          .status(400)
+          .json({ message: "All required fields must be provided" });
+        return;
+      }
+      const result = await this.userService.booking(bookingData);
+      res
+        .status(201)
+        .json({ message: "Booking created successfully", booking: result });
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while creating the booking" });
     }
   }
 }
 
-export default UserController
+export default UserController;

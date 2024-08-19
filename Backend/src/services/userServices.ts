@@ -1,10 +1,11 @@
-import { UserDoc } from "../interfaces/IUser";
+import { IBookingData, UserDoc } from "../interfaces/IUser";
 import { Request, Response } from 'express';
 import UserRepositories from "../repositories/userRepositories";
 import bcrypt from "bcrypt"
 import { sendVerifyMail } from "../utils/otpVerification";
 import OtpRepository from "../repositories/otpRepositories";
 import { CreateJWT } from "../utils/generateToken";
+import { IBooking } from "../models/mechanikBookingModel";
 
 class UserServices {
     private userRepo: UserRepositories;
@@ -27,6 +28,7 @@ class UserServices {
             throw new Error("Failed to check existing email. Please try again later.");
         }
     }
+
     async checkExistingUser(userId: string) {
         try {
             const userData: UserDoc | null = await this.userRepo.findUserById(userId);
@@ -70,6 +72,7 @@ class UserServices {
         console.log("myyyyy", result)
         return { status: true, result, message: 'successful' };
     }
+
     async login(email: string, password: string) {
         try {
             const result = await this.userRepo.login(email, password)
@@ -130,16 +133,22 @@ class UserServices {
             if (!result) {
                 throw new Error('Failed to reset password');
             }
-            return { succuss: true, result ,message:"Successfully changed password."}
+            return { succuss: true, result, message: "Successfully changed password." }
         } catch (error) {
             console.error('Error in UserService.resetPassword:', error);
             throw error;
         }
     }
+
     async searchMechanics(lat: number, lon: number, type: string) {
         const mechanics = await this.userRepo.findMechanicsNearLocation(lat, lon, type);
         return mechanics
-      }
+    }
+
+    async booking(bookingData: IBookingData): Promise<IBooking> {
+        return await this.userRepo.createBooking(bookingData);
+    }
+
 }
 
 export default UserServices;

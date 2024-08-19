@@ -1,4 +1,4 @@
-import {Document} from "mongoose"
+import { Document, Schema } from 'mongoose';
 
 export interface UserDoc extends Document{
   name: string;
@@ -25,3 +25,20 @@ declare module 'express-session' {
     name:string;
   }
 }
+
+
+export interface IBookingData {
+  user: Schema.Types.ObjectId;
+  mechanic: Schema.Types.ObjectId;
+  coordinates: [number, number];
+  bookingTime: Date;
+  serviceDetails: string;
+  status: string;
+  name: string;
+  mobileNumber: string;
+  complainDescription?: string;
+  district?:string
+  locationName?:string
+}
+
+export interface IBooking extends IBookingData, Document {}

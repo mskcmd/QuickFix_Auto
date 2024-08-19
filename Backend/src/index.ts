@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {errorHandler,notFound} from "./middleware/errorMiddleware"
 import adminRoute from './routes/adminRoutes';
 import cookieParser from 'cookie-parser';
+import userRoute from './routes/userRoutes';
 
 // Generate a UUID
 const uuid = uuidv4();
@@ -38,6 +39,8 @@ credentials:true
 app.use("/api/auth",authRoute)
 app.use("/api/mechanic",mechanicRoute)
 app.use("/api/admin",adminRoute)
+app.use("/api/user",userRoute)
+
 
 app.use(notFound)
 app.use(errorHandler)

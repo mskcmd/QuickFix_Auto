@@ -25,7 +25,6 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { userLogout } from "../../app/slice/AuthSlice";
 
-
 function Header() {
   const userData: UserData | null = useAppSelector(
     (state) => state.auth.userData
@@ -57,8 +56,8 @@ function Header() {
           console.log("User logged out");
         });
         dispatch(userLogout());
-        navigate('/login')
-          toast.success("You are logged out!"); 
+        navigate("/login");
+        toast.success("You are logged out!");
       }
     });
   };
@@ -162,7 +161,9 @@ function Header() {
         <div className="flex items-center space-x-3">
           <NavButton icon={FaComments} />
           {userData ? (
-            <NavButton icon={FaUser} />
+            <NavLink to="/profiler" icon={FaUser}>
+              {" "}
+            </NavLink>
           ) : (
             <NavButton icon={FaSignInAlt} to="/login" />
           )}

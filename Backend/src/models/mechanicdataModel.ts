@@ -1,11 +1,11 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
 import { IMechanicData } from "../interfaces/IMechanic";
-import Mechanic from "./mechanicModel"; // Assuming this is the correct import
 
 // Define the schema
 const MechanicDataSchema: Schema = new Schema({
   mechanicID: { 
     type: Schema.Types.ObjectId,
+    ref: "Mechanic",
     required: true,
   },
   type: {
@@ -57,10 +57,17 @@ const MechanicDataSchema: Schema = new Schema({
     url: { type: String },
     contentType: { type: String },
   },
+  workingHours: [{
+    days: [String],
+    startTime: String,
+    endTime: String
+  }]
 }, { timestamps: true });
 
+// Create a 2dsphere index on the location field for geospatial queries
 MechanicDataSchema.index({ location: '2dsphere' });
 
+// Create the model
 const MechanicData: Model<IMechanicData> = mongoose.model<IMechanicData>("MechanicData", MechanicDataSchema);
 
 export default MechanicData;
