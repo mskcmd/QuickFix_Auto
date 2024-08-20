@@ -35,7 +35,7 @@ const LoginPage = forwardRef<HTMLFormElement>((_props, ref) => {
           return toast.error(data?.data.message);
         }
         dispatch(setMechanicCredential(data?.data.data));
-        navigate("/mechanic/Home");
+        navigate("/mechanic/home/dashbord");
         toast.success("Login successfully");
       } catch (error) {
         console.error(error);

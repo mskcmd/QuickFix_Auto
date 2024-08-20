@@ -52,6 +52,7 @@ class mechanicController {
       res.json({ message: "otp is rong" })
     }
   }
+
   async resendOtp(req: Request, res: Response): Promise<void> {
     try {
       const email = req.session.mechanicemail;
@@ -71,6 +72,7 @@ class mechanicController {
       res.status(500).json({ error: 'Failed to send OTP' });
     }
   }
+
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body
@@ -171,6 +173,7 @@ class mechanicController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
   async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       const newPassword = req.body.password;
@@ -186,7 +189,6 @@ class mechanicController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
-
 
   async mech_register(req: Request, res: Response) {
     try {
@@ -254,6 +256,7 @@ class mechanicController {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
   async mechLogout(req: Request, res: Response): Promise<void> {
     try {
       res.cookie('admin_access_token', '', {
@@ -267,6 +270,44 @@ class mechanicController {
     }
   }
 
+  async fetchUsers(req: Request, res: Response): Promise<void> {
+    const id = req.query.Id as string;
+    try {
+      if (!id) {
+        res.status(400).json({ error: 'Missing mechanic ID' });
+        return;
+      }
+      const mechanicData = await this.mechanicServices.fetchUsers(id);
+      if (!mechanicData) {
+        res.status(404).json({ error: 'Mechanic not found' });
+        return;
+      }
+      res.json(mechanicData);
+    } catch (error) {
+      console.log(error);
+
+    }
+
+  }
+
+  async statusUpdate(req: Request, res: Response): Promise<void> {
+    const id = req.body.params?.Id as string;
+    const status = req.body.params?.Status as string;
+  
+    console.log("Received ID and Status:", id, status);
+  
+    try {
+      if (!id || !status) {
+        res.status(400).json({ error: "Missing ID or Status" });
+        return;
+      }
+      const result = await this.mechanicServices.statusUpdate(id,status)
+      res.status(200).json({ message: "Status updated successfully" });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 
 }
 

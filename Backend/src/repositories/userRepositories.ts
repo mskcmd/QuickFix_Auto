@@ -242,7 +242,7 @@ class UserRepository {
     }
   }
 
-  async createBooking(bookingData: IBookingData): Promise<IBooking> {
+  async createBooking(bookingData: IBooking): Promise<IBooking> {
     const newBooking = new Booking(bookingData);
     return await newBooking.save();
   }

@@ -4,6 +4,7 @@ import { FromData } from "../Pages/user/SignupPage"
 import userRoutes from "../Services/Endpoints/userEndPoints";
 import Api from "../Services/axios";
 import { FormData } from "../Components/User/BookingForm";
+import { BookingFormData } from "../Pages/user/MechBooking";
 
 export const signup = async ({ name, email, phone, password }: FromData) => {
     try {
@@ -108,14 +109,25 @@ export const logout = async () => {
 export const searchMechShop = async (formData: FormData): Promise<FormData | null> => {
     try {
         console.log("Form data is validf", formData);
-      const response: AxiosResponse<FormData> = await Api.get(userRoutes.searchMech, {
-        params: formData
-      });
-      console.log(response);
-      
-      return response.data;
+        const response: AxiosResponse<FormData> = await Api.get(userRoutes.searchMech, {
+            params: formData
+        });
+        console.log(response);
+
+        return response.data;
     } catch (error) {
-      console.error('Error searching for mechanic shops:', error);
-      return null;
+        console.error('Error searching for mechanic shops:', error);
+        return null;
     }
-  };
+};
+
+export const booking = async (formData: BookingFormData) => {
+    try {
+        console.log("Submitting booking data:", formData);
+        const result = await Api.post(userRoutes.booking, formData); // Removed the wrapping `formData` inside an object
+        return result; // Ensure result is returned for further handling
+    } catch (error) {
+        console.error("Error during booking API call:", error);
+        throw error; // Throw the error so it can be caught in handleSubmit
+    }
+};

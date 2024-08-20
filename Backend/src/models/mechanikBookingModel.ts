@@ -11,8 +11,8 @@ export interface IBooking extends Document {
   name: string;                      // Name of the person who made the booking
   mobileNumber: string;              // Mobile number of the person who made the booking
   complainDescription?: string;      // Optional field for additional complaints or descriptions
-  district:string
-  locationName:string
+  district?: string;                 // Optional district field
+  locationName?: string;             // Optional location name field
 }
 
 // Create the Booking schema
@@ -37,7 +37,6 @@ const bookingSchema = new Schema<IBooking>({
   },
   locationName: {
     type: String,
-    // required: true,
   },
   district: {
     type: String,
@@ -48,8 +47,8 @@ const bookingSchema = new Schema<IBooking>({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Completed', 'Cancelled'],
-    required: true,
+    enum: ['Pending', 'Completed','Ongoing','Upcoming','Cancelled'],
+    default: 'Pending',
   },
   name: {
     type: String,
@@ -61,7 +60,6 @@ const bookingSchema = new Schema<IBooking>({
   },
   complainDescription: {
     type: String,
-    required: false, // Make it optional
   },
 });
 

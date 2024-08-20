@@ -6,6 +6,7 @@ import { Types } from 'mongoose';
 
 import bcrypt from 'bcrypt';
 import { deleteFileFromS3 } from "../middleware/s3UploadMiddleware";
+import Booking from "../models/mechanikBookingModel";
 
 class mechanicRepositories {
     async findUserByEmail(email: string): Promise<MechnicDoc | null> {
@@ -224,6 +225,45 @@ class mechanicRepositories {
         } catch (error) {
             console.error("Error in repository layer:", error);
             throw new Error('Database query failed');
+        }
+    }
+
+    async fetchUsers(id: string): Promise<any> {
+        try {
+            const bookings = await Booking.find({ mechanic: id })
+                .populate({
+                    path: 'user',
+                    select: '-password -isBlocked -isUser -isVerified -createdAt -updatedAt'
+                })
+                .exec();
+            console.log(bookings);
+
+            return bookings;
+
+        } catch (error) {
+
+        }
+    }
+
+    async statusUpdate(id: string, status: string): Promise<any> {
+        try {
+            const objectId = new mongoose.Types.ObjectId(id);
+            console.log("Converted ObjectId:", objectId);
+
+            // Update the status field using $set
+            const result = await Booking.updateOne(
+                { _id: objectId }, // Filter criteria
+                { $set: { status: status } } // Update operation
+            );
+
+            if (result.modifiedCount > 0) {
+                console.log("Status updated successfully.");
+            } else {
+                console.log("No document found or status unchanged.");
+            }
+            return result
+        } catch (error) {
+            console.log("Error updating status:", error);
         }
     }
 

@@ -28,14 +28,14 @@ declare module 'express-session' {
 
 
 export interface IBookingData {
-  user: Schema.Types.ObjectId;
-  mechanic: Schema.Types.ObjectId;
-  coordinates: [number, number];
-  bookingTime: Date;
-  serviceDetails: string;
-  status: string;
-  name: string;
-  mobileNumber: string;
+  user?: Schema.Types.ObjectId;
+  mechanic?: Schema.Types.ObjectId;
+  coordinates?: [number, number];
+  bookingTime?: Date;
+  serviceDetails?: string;
+  status?: string;
+  name?: string;
+  mobileNumber?: string;
   complainDescription?: string;
   district?:string
   locationName?:string

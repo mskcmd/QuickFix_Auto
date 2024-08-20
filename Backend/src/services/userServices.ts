@@ -145,9 +145,9 @@ class UserServices {
         return mechanics
     }
 
-    async booking(bookingData: IBookingData): Promise<IBooking> {
+    async booking(bookingData: IBooking): Promise<IBooking> {
         return await this.userRepo.createBooking(bookingData);
-    }
+      }
 
 }
 

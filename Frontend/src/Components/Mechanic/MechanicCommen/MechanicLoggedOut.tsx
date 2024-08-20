@@ -9,7 +9,7 @@ const MechanicLoggedOut = () => {
     
     if (mechanicData) {
 
-        return <Navigate to='/mechanic/Home' />
+        return <Navigate to="/mechanic/home/dashbord"/>
     } else {
         return <Outlet />
     }

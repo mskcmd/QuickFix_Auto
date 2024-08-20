@@ -1,4 +1,5 @@
 export interface MechanicProfile {
+    mechData: any;
     workingHours: any;
     name: string | undefined;
     bikingTime: number;

@@ -11,7 +11,9 @@ const mechanicRoute={
 
     Register:"/mechanic/register",
     getData:"/mechanic/getData",
-    getMcechData:"/mechanic/getmechData"
+    getMcechData:"/mechanic/getmechData",
+    fetchUsers:"/mechanic/users",
+    statusChange:"/mechanic/statusUpdate"
 
 }
 

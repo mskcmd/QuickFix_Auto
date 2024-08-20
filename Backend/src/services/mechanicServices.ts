@@ -28,6 +28,7 @@ class mechanicServices {
             );
         }
     }
+
     async createMechanic(
         name: string,
         email: string,
@@ -55,6 +56,7 @@ class mechanicServices {
             console.log(error);
         }
     }
+
     async veryfyOtp(mechanicId: string) {
         const result = await this.otpRepo.verifyMechanic(mechanicId);
         console.log("myyxyyy", result);
@@ -64,8 +66,8 @@ class mechanicServices {
     async login(email: string, password: string) {
         try {
             const result = await this.mechanicRepo.login(email, password)
-            console.log("re",result);
-            
+            console.log("re", result);
+
             if (result?.status == true) {
                 const mech_token = this.createjwt.generateToken(result.mechanic?.id);
                 const mech_refreshToken = this.createjwt.generateRefreshToken(result.mechanic?.id)
@@ -110,6 +112,7 @@ class mechanicServices {
             throw new Error('Error forgetting password');
         }
     }
+
     async checkExistingUser(userId: string) {
         try {
             const userData: MechnicDoc | null = await this.mechanicRepo.findUserById(userId);
@@ -123,6 +126,7 @@ class mechanicServices {
             throw new Error("Failed to check existing email. Please try again later.");
         }
     }
+
     async resetPassword(userId: string, password: string) {
         try {
             if (!userId || !password) {
@@ -142,40 +146,59 @@ class mechanicServices {
         }
     }
 
-    
     async registerMechData(uploadUrls: Record<string, string>, body: any): Promise<IMechanicData> {
         try {
-          console.log("hs",uploadUrls, body);
-          const result = await this.mechanicRepo.registerData(uploadUrls, body);
-          return result;
+            console.log("hs", uploadUrls, body);
+            const result = await this.mechanicRepo.registerData(uploadUrls, body);
+            return result;
         } catch (error) {
-          console.error('Error in registerMechData:', error);
-          throw new Error('Failed to register mechanic data');
+            console.error('Error in registerMechData:', error);
+            throw new Error('Failed to register mechanic data');
         }
-      }
+    }
 
 
-      async getMechData(id: string): Promise<any> {
+    async getMechData(id: string): Promise<any> {
         try {
-          const result = await this.mechanicRepo.getmechData(id);
-          return result;
+            const result = await this.mechanicRepo.getmechData(id);
+            return result;
         } catch (error) {
-          console.error("Error in service layer:", error);
-          throw new Error('Failed to fetch mechanic data');
+            console.error("Error in service layer:", error);
+            throw new Error('Failed to fetch mechanic data');
         }
-      }
+    }
 
-      async getDetailData(id: string): Promise<any> {
-        try {  
-          const result = await this.mechanicRepo.getDetailData(id);
-          return result;
+    async getDetailData(id: string): Promise<any> {
+        try {
+            const result = await this.mechanicRepo.getDetailData(id);
+            return result;
         } catch (error) {
-          console.error("Error in service layer:", error);
-          throw new Error('Failed to fetch mechanic data');
+            console.error("Error in service layer:", error);
+            throw new Error('Failed to fetch mechanic data');
         }
-      }
-      
-      
+    }
+
+    async fetchUsers(id: string): Promise<any> {
+        try {
+            const result = await this.mechanicRepo.fetchUsers(id);
+            return result;
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    async statusUpdate(id: string, status: string): Promise<any> {
+        try {
+            const result = await this.mechanicRepo.statusUpdate(id, status)
+            return result
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
 }
 
 

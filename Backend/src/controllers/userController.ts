@@ -285,26 +285,27 @@ class UserController {
   }
 
   async mechBooking(req: Request, res: Response): Promise<void> {
-    console.log("booking", req.body);
+    console.log("bookingg", req.body);
     try {
-      const bookingData: IBookingData = {
-        user: req.body.user,
-        mechanic: req.body.mechanic,
-        coordinates: req.body.coordinates,
-        bookingTime: new Date(req.body.bookingTime),
-        serviceDetails: req.body.serviceDetails,
-        status: req.body.status,
-        name: req.body.name,
-        mobileNumber: req.body.mobileNumber,
-        complainDescription: req.body.complainDescription,
-      };
+      const bookingData: IBooking = {
+        user: req.body.userId,
+        mechanic: req.body.mechId,
+        coordinates: [req.body.latitude, req.body.longitude],
+        bookingTime: new Date(req.body.dateTime),
+        serviceDetails: req.body.services.join(', '),  // Join services array into a string
+        name: req.body.firstName,
+        mobileNumber: req.body.phoneNumber,
+        complainDescription: req.body.problem,
+        locationName: req.body.location,  // Optional location field
+        status: 'Pending',                // Default status
+      } as IBooking;
+
       if (
         !bookingData.user ||
         !bookingData.mechanic ||
         !bookingData.coordinates ||
         !bookingData.bookingTime ||
         !bookingData.serviceDetails ||
-        !bookingData.status ||
         !bookingData.name ||
         !bookingData.mobileNumber
       ) {
@@ -313,10 +314,11 @@ class UserController {
           .json({ message: "All required fields must be provided" });
         return;
       }
+
       const result = await this.userService.booking(bookingData);
       res
         .status(201)
-        .json({ message: "Booking created successfully", booking: result });
+        .json({ success:true,message: "Booking created successfully", booking: result });
     } catch (error) {
       console.error("Error creating booking:", error);
       res

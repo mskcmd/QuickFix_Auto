@@ -53,6 +53,7 @@ export const Login = async (email: string, password: string) => {
 
     }
 }
+
 export const forgetPassword = async (email: string) => {
     try {
         console.log("email", email);
@@ -219,3 +220,24 @@ export const logout = async () => {
     }
 }
 
+export const fetchUsers = async (mechanicId: string) => {
+    try {
+        console.log("Fetching dasta for mechanic ID:", mechanicId);
+        const result = await Api.get(mechanicRoute.fetchUsers, { params: { Id: mechanicId } });
+        return result;
+    } catch (error) {
+        console.error("Error fetching users data:", error);
+        throw error;
+    }
+};
+
+export const statusUpdate = async (bookingId: string, newStatus: string) => {
+    try {
+        console.log(`Changing status for user 2  ${bookingId} to ${newStatus}`);
+        const result = await Api.put(mechanicRoute.statusChange, { params: { Id: bookingId, Status: newStatus } });
+        return result;
+    } catch (error) {
+        console.error("Error fetching users data:", error);
+        throw error;
+    }
+};
