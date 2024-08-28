@@ -24,14 +24,14 @@ function App() {
       <ToastContainer />
       <Toaster position="top-center" reverseOrder={false} />
       <BrowserRouter>
-        <Routes>
-          <Route element={<UserLoggedOut />}>
-            <Route path="" element={<LandingPage />} />
-          </Route>
-          <Route path="/*" element={<UserRoutes />} />
-          <Route path="/mechanic/*" element={<MechanicRoutes />} />
-          <Route path="/admin/*" element={<AdminRouter />} />
-        </Routes>
+          <Routes>
+            <Route element={<UserLoggedOut />}>
+              <Route path="" element={<LandingPage />} />
+            </Route>
+            <Route path="/*" element={<UserRoutes />} />
+            <Route path="/mechanic/*" element={<MechanicRoutes />} />
+            <Route path="/admin/*" element={<AdminRouter />} />
+          </Routes>
       </BrowserRouter>
     </>
   );

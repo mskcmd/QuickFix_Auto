@@ -8,6 +8,7 @@ export interface UserDoc extends Document{
   isVerified?: boolean;
   isUser?:boolean;
   isBlocked?:boolean;
+  imageUrl?:string
 }
 export interface UseLog {
   email:string;

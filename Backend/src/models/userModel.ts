@@ -16,6 +16,9 @@ const userSchema = new Schema<UserDoc>({
     type: String,
     required: true
   },
+  imageUrl: {
+    type: String,
+  },
   password: {
     type: String,
     required: true

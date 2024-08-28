@@ -9,6 +9,12 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 
+const uploadSingleImage = upload.single('image');
+console.log("sss",uploadSingleImage);
+export default uploadSingleImage;
+
+
+
 export const uploadFields = upload.fields([
   { name: 'certificate', maxCount: 1 },
   { name: 'profileImage0', maxCount: 1 },
@@ -40,7 +46,7 @@ const uploadFile = async (file: UploadedFile): Promise<string> => {
 
   const params = {
     Bucket: process.env.BUCKET_NAME as string,
-    Key: `uploads/${file.originalname}`, // Path where the file will be stored in the bucket
+    Key: `uploads/${file.originalname}`, 
     Body: file.buffer,
     ContentType: file.mimetype,
     // ACL: 'public-read', // Uncomment this if you want to make the file publicly readable

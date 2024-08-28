@@ -161,7 +161,7 @@ class UserRepository {
   async findMechanicsNearLocation(lat: number, lon: number, type: string, maxDistance: number = 5000) {
     try {
       const query = type === 'all' ? {} : { type: type };
- 
+
       const mechanics = await MechanicData.aggregate([
         {
           $geoNear: {
@@ -198,7 +198,7 @@ class UserRepository {
       ]);
 
       // const MData: MechnicDoc | null = await Mechanic.findOne({ mechanics. }).exec();
- 
+
 
       const formattedMechanics = await Promise.all(
         mechanics.map(async mechanic => {
@@ -207,7 +207,7 @@ class UserRepository {
             const mechData = await Mechanic.findOne({ _id: mechanic.mechanicID })
               .select('name email phone') // Only retrieve name, email, and phone
               .exec();
-      
+
             // Format and return the data
             return {
               ...mechanic,
@@ -230,7 +230,7 @@ class UserRepository {
           }
         })
       );
-      
+
 
       console.log(`Found ${formattedMechanics.length} mechanics within ${maxDistance / 1000} km radius`);
       console.log(formattedMechanics);
@@ -246,6 +246,68 @@ class UserRepository {
     const newBooking = new Booking(bookingData);
     return await newBooking.save();
   }
+
+  async fetchBookData(id: string, type: string): Promise<any> {
+    try {
+      let bookData;
+
+      if (type === "All") {
+        // Fetch all bookings for the user
+        bookData = await Booking.find({ user: id })
+          .populate({
+            path: 'mechanic',
+            select: '-password -isBlocked -isUser -isVerified -createdAt -updatedAt'
+          })
+          .exec();
+        console.log("bookData:", bookData);
+
+      } else {
+        // Fetch bookings based on status and user ID
+        bookData = await Booking.find({ status: type, user: id })
+          .populate({
+            path: 'mechanic',
+            select: '-password -isBlocked -isUser -isVerified -createdAt -updatedAt'
+          })
+          .exec();
+        console.log("bookData1:", bookData);
+      }
+
+      return bookData;
+
+    } catch (error) {
+      console.error("Error fetching book data:", error);
+      throw new Error("Failed to fetch book data"); // Rethrow or handle the error appropriately
+    }
+  }
+
+  async updateProfile(updatedData: any): Promise<any> {
+    try {
+      const userId = updatedData.id;
+      console.log("Updated Data:", updatedData);
+      const updatedProfile = await User.findByIdAndUpdate(
+        userId,
+        {
+          name: updatedData.name,
+          phone: updatedData.phone,
+          imageUrl: updatedData.image,
+        },
+        { new: true }
+      );
+      console.log(updatedProfile);
+
+      if (!updatedProfile) {
+        throw new Error("User not found");
+      }
+
+      return updatedProfile;
+    } catch (error) {
+      console.error("Error in updateProfile repository:", error);
+      throw new Error("Failed to update profile in the database");
+    }
+  }
+
+
+
 
 }
 

@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 
-export interface FormData {
+export interface FormDatas {
   locationName: string;
   latitude: string;
   longitude: string;
@@ -22,7 +22,7 @@ const BookingForm = forwardRef<HTMLDivElement>((_props, ref) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number]>([20.5937, 78.9629]);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormDatas>({
     locationName: "",
     latitude: "",
     longitude: "",

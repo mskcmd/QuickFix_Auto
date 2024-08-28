@@ -147,7 +147,24 @@ class UserServices {
 
     async booking(bookingData: IBooking): Promise<IBooking> {
         return await this.userRepo.createBooking(bookingData);
-      }
+    }
+
+    async fetchBookData(id: string, type: string): Promise<any> {
+        return await this.userRepo.fetchBookData(id, type);
+    }
+
+    async updateProfile(userData: any, fileUrl: string | null): Promise<any> {
+        try {
+            const updatedData = {
+                ...userData,
+                image: fileUrl, 
+            };
+            return await this.userRepo.updateProfile(updatedData);
+        } catch (error) {
+            console.error("Error in updateProfile service:", error);
+            throw new Error("Failed to update profile");
+        }
+    }
 
 }
 

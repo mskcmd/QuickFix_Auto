@@ -3,7 +3,7 @@ import UserServices from "../services/userServices";
 import { IBookingData, UserDoc } from "../interfaces/IUser";
 import { sendVerifyMail } from "../utils/otpVerification";
 import { IBooking } from "../models/mechanikBookingModel";
-import { Schema } from "mongoose";
+import { uploadFile } from "../middleware/s3UploadMiddleware";
 
 class UserController {
   private userService: UserServices;
@@ -318,7 +318,7 @@ class UserController {
       const result = await this.userService.booking(bookingData);
       res
         .status(201)
-        .json({ success:true,message: "Booking created successfully", booking: result });
+        .json({ success: true, message: "Booking created successfully", booking: result });
     } catch (error) {
       console.error("Error creating booking:", error);
       res
@@ -326,6 +326,41 @@ class UserController {
         .json({ message: "An error occurred while creating the booking" });
     }
   }
+
+  async fetchBookData(req: Request, res: Response): Promise<void> {
+    const { id, type } = req.query;
+    try {
+      if (!id || !type) {
+        res.status(400).json({ error: "ID and type are required" });
+        return;
+      }
+      const response = await this.userService.fetchBookData(id as string, type as string);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error("Error fetching book data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    try {
+        console.log("Request body:", req.body);
+        console.log("Uploaded file:", req.file);
+
+        let fileUrl = null;
+        if (req.file) {
+            fileUrl = await uploadFile(req.file);
+        }
+        const response = await this.userService.updateProfile(req.body, fileUrl);
+        res.status(200).json({ message: "Profile updated successfully", data: response });
+    } catch (error) {
+        console.error("Error in updateProfile controller:", error);
+        res.status(500).json({ message: "Profile update failed" });
+    }
+}
+
+
+
 }
 
 export default UserController;

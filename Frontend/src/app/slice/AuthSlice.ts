@@ -40,6 +40,7 @@ export interface UserData {
     isVerified: boolean;
     name: string;
     phone: string;
+    imageUrl?:string
   };
   userId: string;
   token: string;

@@ -66,3 +66,11 @@ export const ResetPasswordValidation = Yup.object({
     .oneOf([Yup.ref('newPassword'), undefined], 'Passwords must match')
     .required('Confirm Password is required'),
 });
+
+export const updateProfileValidation  =  Yup.object({
+  name: Yup.string().required("Name is required"),
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^[0-9]+$/, "Phone number is not valid"),
+})
+

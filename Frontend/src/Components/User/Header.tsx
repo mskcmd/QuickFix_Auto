@@ -43,7 +43,7 @@ function Header() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleLogout = () => {
+    const handleLogout = () => {
     Swal.fire({
       title: "Are you sure you want to logout?",
       icon: "warning",

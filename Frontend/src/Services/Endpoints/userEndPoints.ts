@@ -10,7 +10,11 @@ const userRoutes={
     userLogout:"/auth/userLogout",
     searchMech:"/auth/serchMech",
 
-    booking:"/user/booking"
+    booking:"/user/booking",
+    fetchBookData:"/user/fetchBookData",
+    updateProfle:"/user/updateProfle"
+
+
 
 }
 
